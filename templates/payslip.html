@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payslip – {{ cutoff.label }}</title>
+
+    <style>
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #0b0b0f;
+            color: #eee;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav {
+            height: 64px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #101016;
+            border-bottom: 1px solid #292934;
+        }
+
+        .brand { font-weight: bold; }
+
+        .nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 18px;
+        }
+
+        .nav a:hover { color: #fff; }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h1 { margin: 0 0 6px; }
+
+        .muted { color: #888894; font-size: 14px; }
+
+        /* ---------- period picker ---------- */
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+            margin: 18px 0 22px;
+        }
+
+        .toolbar label {
+            display: block;
+            margin-bottom: 6px;
+            color: #cfcfda;
+            font-size: 13px;
+        }
+
+        select {
+            color-scheme: dark;
+            min-width: 230px;
+            padding: 11px 12px;
+            background: #1a1a23;
+            color: #fff;
+            border: 1px solid #30303b;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        select option {
+            background: #1a1a23;
+            color: #fff;
+        }
+
+        .btn {
+            padding: 11px 16px;
+            background: #8054e8;
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover { background: #6944df; }
+
+        .btn.gray { background: #2a2a36; }
+        .btn.gray:hover { background: #363646; }
+
+        /* ---------- payslip ---------- */
+
+        .slip {
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 13px;
+            padding: 26px;
+            margin-bottom: 22px;
+        }
+
+        .slip-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #292934;
+        }
+
+        .slip-title {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: #b79cff;
+            font-weight: bold;
+        }
+
+        .slip-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 6px 0 3px;
+        }
+
+        .slip-period { text-align: right; }
+
+        .slip-period strong { font-size: 18px; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge.final { background: #174e35; color: #68e6a1; }
+        .badge.open { background: #5a4a1a; color: #ffc45c; }
+        .badge.absent { background: #6d2929; color: #ff8c8c; }
+        .badge.completed { background: #174e35; color: #68e6a1; }
+        .badge.on-duty { background: #51349a; color: #d6c4ff; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .stat {
+            background: #1a1a23;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .stat .k { color: #888894; font-size: 12px; }
+        .stat .v { font-size: 18px; font-weight: bold; margin-top: 5px; }
+
+        .calc {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0 4px;
+        }
+
+        .calc td {
+            padding: 10px 2px;
+            border-bottom: 1px solid #20202a;
+            font-size: 14px;
+        }
+
+        .calc td:last-child { text-align: right; white-space: nowrap; }
+
+        .calc .minus td:last-child { color: #ff8c8c; }
+
+        .calc .net td {
+            border-bottom: 0;
+            padding-top: 14px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .calc .net td:last-child { color: #68e6a1; }
+
+        h3 { margin: 24px 0 10px; font-size: 15px; }
+
+        .table-wrap { overflow-x: auto; }
+
+        .days {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        .days th {
+            text-align: left;
+            color: #858591;
+            font-size: 12px;
+            padding: 10px;
+            border-bottom: 1px solid #292934;
+        }
+
+        .days td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #20202a;
+            font-size: 13px;
+        }
+
+        .days .num { text-align: right; }
+
+        .days tfoot td {
+            font-weight: bold;
+            border-bottom: 0;
+            border-top: 1px solid #292934;
+        }
+
+        .note {
+            margin-top: 16px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: rgba(255,180,50,.1);
+            color: #ffc45c;
+        }
+
+        .foot {
+            margin-top: 18px;
+            color: #6c6c78;
+            font-size: 12px;
+        }
+
+        .empty { text-align: center; color: #777; padding: 26px; }
+
+
+        .date-input {
+            padding: 10px 12px;
+            background: #1a1a23;
+            color: #fff;
+            border: 1px solid #30303b;
+            border-radius: 8px;
+            font-size: 14px;
+            color-scheme: dark;
+        }
+
+        .flash {
+            padding: 11px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .flash.error { color: #ff7777; background: rgba(255,70,70,.12); }
+        .flash.success { color: #63e49a; background: rgba(50,220,130,.1); }
+
+        @media (max-width: 700px) {
+
+            .nav { padding: 0 16px; height: 56px; }
+            .nav a { margin-left: 12px; font-size: 14px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .slip { padding: 18px; }
+            .slip-period { text-align: left; }
+            select { min-width: 0; width: 100%; }
+            .toolbar > div { flex: 1 1 100%; }
+
+        }
+
+        /* ---------- printing: plain white paper ---------- */
+
+        @media print {
+
+            body { background: #fff; color: #000; }
+
+            .nav, .toolbar, .no-print { display: none !important; }
+
+            .container { margin: 0; padding: 0; max-width: none; }
+
+            .slip {
+                background: #fff;
+                border: 1px solid #999;
+                border-radius: 0;
+                margin: 0 0 18px;
+                page-break-after: always;
+                break-after: page;
+            }
+
+            .slip:last-child { page-break-after: auto; break-after: auto; }
+
+            .slip-head, .calc td, .days th, .days td, .days tfoot td {
+                border-color: #bbb;
+            }
+
+            .slip-title, .slip-period strong { color: #000; }
+
+            .stat { background: #f1f1f1; }
+            .stat .k, .muted, .foot, .days th { color: #444; }
+
+            .calc .minus td:last-child { color: #a00; }
+            .calc .net td:last-child { color: #000; }
+
+            .badge, .note {
+                background: none !important;
+                color: #000 !important;
+                border: 1px solid #888;
+            }
+
+            .table-wrap { overflow: visible; }
+            .days { min-width: 0; }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="nav">
+
+    <div class="brand">Payslip</div>
+
+    <div>
+
+        <a href="{{ url_for('admin', ps_start=cutoff.start_iso, ps_end=cutoff.end_iso, _anchor='payslips') }}">All Payslips</a>
+        <a href="{{ url_for('admin') }}">Admin</a>
+
+        <a href="{{ url_for('settings') }}">Settings</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+    </div>
+
+</div>
+
+<div class="container">
+
+    <h1>Payslip</h1>
+
+    <div class="muted">Cut-off period: {{ cutoff.label }}</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}" style="margin-top:14px;">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="GET" action="{{ form_action }}" class="toolbar" id="range-form">
+
+        <div>
+            <label for="start">From</label>
+            <input type="date" id="start" name="start" value="{{ cutoff.start_iso }}" required class="date-input">
+        </div>
+
+        <div>
+            <label for="end">To</label>
+            <input type="date" id="end" name="end" value="{{ cutoff.end_iso }}" required class="date-input">
+        </div>
+
+        <button type="submit" class="btn">Apply</button>
+
+        <div>
+            <label for="preset">Quick pick</label>
+            <select id="preset">
+                <option value="">1st–15th / 16th–end…</option>
+                {% for p in presets %}
+                    <option value="{{ p.start_iso }},{{ p.end_iso }}"{% if p.start_iso == cutoff.start_iso and p.end_iso == cutoff.end_iso %} selected{% endif %}>{{ p.label }}{% if p.in_progress %} (current){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="button" class="btn gray" onclick="window.print()">Print / Save PDF</button>
+
+    </form>
+
+    {% for slip in slips %}
+
+        {% set t = slip.totals %}
+
+        <div class="slip">
+
+            <div class="slip-head">
+
+                <div>
+                    <div class="slip-title">PAYSLIP</div>
+                    <div class="slip-name">{{ slip.user["username"] }}</div>
+                    <div class="muted">
+                        {{ slip.user["role"]|role_label }}
+                        &nbsp;•&nbsp;
+                        Rate ₱{{ slip.user["pay_rate"]|rate }}/min
+                    </div>
+                </div>
+
+                <div class="slip-period">
+                    <div class="muted">Cut-off period</div>
+                    <strong>{{ cutoff.label }}</strong>
+                    <div style="margin-top:7px;">
+                        {% if cutoff.in_progress %}
+                            <span class="badge open">IN PROGRESS</span>
+                        {% else %}
+                            <span class="badge final">CLOSED</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="k">Days worked</div>
+                    <div class="v">{{ t.days_worked }}</div>
+                </div>
+
+                <div class="stat">
+                    <div class="k">Absences</div>
+                    <div class="v">{{ t.days_absent }}</div>
+                </div>
+
+                <div class="stat">
+                    <div class="k">Time worked</div>
+                    <div class="v">{{ format_duration(t.worked_seconds) }}</div>
+                </div>
+
+                <div class="stat">
+                    <div class="k">Late (total)</div>
+                    <div class="v" style="font-size:15px;">{{ t.late_minutes|late_text }}</div>
+                </div>
+
+            </div>
+
+            <table class="calc">
+
+                <tr>
+                    <td>Gross earnings</td>
+                    <td>₱{{ "{:,.2f}".format(t.gross) }}</td>
+                </tr>
+
+                <tr class="minus">
+                    <td>Less: Late deduction ({{ t.late_minutes|late_text }})</td>
+                    <td>− ₱{{ "{:,.2f}".format(t.late_deduction) }}</td>
+                </tr>
+
+                <tr class="net">
+                    <td>NET PAY</td>
+                    <td>₱{{ "{:,.2f}".format(t.net) }}</td>
+                </tr>
+
+            </table>
+
+            {% if cutoff.in_progress %}
+                <div class="note">
+                    This cut-off is still running. Amounts will change until {{ cutoff.end.strftime("%b") }} {{ cutoff.end.day }}.
+                </div>
+            {% endif %}
+
+            {% if t.ongoing %}
+                <div class="note">
+                    A duty is still ON DUTY. It is counted once the duty is ended.
+                </div>
+            {% endif %}
+
+            <h3>Daily breakdown</h3>
+
+            <div class="table-wrap">
+
+                {% if slip.records %}
+
+                    <table class="days">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Schedule</th>
+                                <th>In</th>
+                                <th>Out</th>
+                                <th class="num">Late</th>
+                                <th class="num">Worked</th>
+                                <th class="num">Gross</th>
+                                <th class="num">Late ded.</th>
+                                <th class="num">Net</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for r in slip.records %}
+                                <tr>
+                                    <td>{{ r.date_label }}</td>
+
+                                    <td>
+                                        {% if r.status == "ABSENT" %}
+                                            <span class="badge absent">ABSENT</span>
+                                        {% elif r.status == "COMPLETED" %}
+                                            <span class="badge completed">COMPLETED</span>
+                                        {% else %}
+                                            <span class="badge on-duty">ON DUTY</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ r.scheduled }}</td>
+                                    <td>{{ r.duty_start|time12 }}</td>
+                                    <td>{{ r.duty_end|time12 }}</td>
+                                    <td class="num">{{ r.late_minutes|late_text }}</td>
+                                    <td class="num">{{ format_duration(r.worked_seconds) }}</td>
+                                    <td class="num">₱{{ "{:,.2f}".format(r.gross) }}</td>
+                                    <td class="num">₱{{ "{:,.2f}".format(r.late_deduction) }}</td>
+                                    <td class="num">₱{{ "{:,.2f}".format(r.net) }}</td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="5">Total</td>
+                                <td class="num">{{ t.late_minutes|late_text }}</td>
+                                <td class="num">{{ format_duration(t.worked_seconds) }}</td>
+                                <td class="num">₱{{ "{:,.2f}".format(t.gross) }}</td>
+                                <td class="num">₱{{ "{:,.2f}".format(t.late_deduction) }}</td>
+                                <td class="num">₱{{ "{:,.2f}".format(t.net) }}</td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                {% else %}
+
+                    <div class="empty">No duty records in this cut-off.</div>
+
+                {% endif %}
+
+            </div>
+
+            {% if slip.debt_outstanding %}
+                <div class="note">
+                    Outstanding debt balance: ₱{{ "{:,.2f}".format(slip.debt_outstanding) }}
+                    {% if slip.debt_overdue_count %}({{ slip.debt_overdue_count }} overdue){% endif %}
+                    — shown for reference, not deducted from this payslip.
+                </div>
+            {% endif %}
+
+            <div class="foot">
+                Generated {{ generated_at }} • System-generated payslip
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+    {% if not slips %}
+        <div class="slip"><div class="empty">No employees found.</div></div>
+    {% endif %}
+
+</div>
+
+<script>
+    // Keep the Quick pick on the applied cut-off (also after typing the same dates).
+    (function () {
+        var sel = document.getElementById("preset");
+        var key = document.getElementById("start").value + "," + document.getElementById("end").value;
+        for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value === key) { sel.selectedIndex = i; break; }
+        }
+    })();
+
+    // Quick pick fills the From / To dates and applies them.
+    document.getElementById("preset").addEventListener("change", function () {
+        if (!this.value) return;
+        var parts = this.value.split(",");
+        document.getElementById("start").value = parts[0];
+        document.getElementById("end").value = parts[1];
+        document.getElementById("range-form").submit();
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1650 @@
+{% if not partial %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Duty Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b0b0f;
+            color: #f1f1f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav {
+            height: 64px;
+            border-bottom: 1px solid #262630;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: #101016;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 18px;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 7px;
+        }
+
+        .header p {
+            color: #92929f;
+        }
+
+        .card {
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .schedule {
+            border: 1px solid #2d2d38;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 12px;
+            background: #101017;
+        }
+
+        .schedule.active {
+            border-color: #8c5aff;
+        }
+
+        .schedule.absent {
+            border-color: #ff5b5b;
+        }
+
+        .schedule.completed {
+            border-color: #35c878;
+        }
+
+        .schedule-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #292934;
+        }
+
+        .status.ON-DUTY {
+            background: #5938a0;
+        }
+
+        .status.COMPLETED {
+            background: #176b42;
+        }
+
+        .status.ABSENT {
+            background: #722c2c;
+        }
+
+        .status.AVAILABLE {
+            background: #274a71;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .info-box {
+            background: #181821;
+            border-radius: 9px;
+            padding: 12px;
+        }
+
+        .label {
+            color: #858592;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 15px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+            position: relative;
+            z-index: 2;
+            touch-action: manipulation;
+        }
+
+        .start {
+            background: #8c5aff;
+            color: white;
+        }
+
+        .end {
+            background: #e84c4c;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .schedule.off {
+            border-color: #3a3a46;
+        }
+
+        .status.DAY-OFF {
+            background: #3a3a46;
+        }
+
+        .week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            background: #181821;
+            border: 1px solid #292934;
+            border-radius: 9px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .day.today {
+            border-color: #8c5aff;
+        }
+
+        .day .name {
+            color: #858592;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .day .off {
+            color: #666;
+        }
+
+        .flash {
+            padding: 11px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            background: #1b1b24;
+        }
+
+        .flash.error {
+            color: #ff7777;
+            background: rgba(255,70,70,.12);
+        }
+
+        .flash.success {
+            color: #63e49a;
+            background: rgba(50,220,130,.1);
+        }
+
+        .flash.warning {
+            color: #ffc45c;
+            background: rgba(255,180,50,.1);
+        }
+
+        .warning {
+            color: #ffb84d;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .success {
+            color: #43d17d;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .error {
+            color: #ff6868;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .countdown {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #b9a5ff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-left: 6px;
+            border-radius: 50%;
+            background: #35c878;
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            50% { opacity: .25; }
+        }
+
+        @media(max-width: 750px) {
+
+            .info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .schedule-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .week {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ---------- camera modal (start duty) ---------- */
+        .cam-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0,0,0,.78);
+        }
+
+        .cam-overlay.open { display: flex; }
+
+        .cam-box {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 14px;
+        }
+
+        .cam-box h3 { margin: 0 0 4px; }
+
+        .cam-box p {
+            margin: 0 0 14px;
+            color: #92929f;
+            font-size: 13px;
+        }
+
+        .cam-view {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .cam-view video,
+        .cam-view img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cam-msg {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #ffc45c;
+            background: rgba(255,180,50,.1);
+        }
+
+        .cam-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .cam-actions button {
+            flex: 1;
+            width: auto;
+            margin: 0;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background: #8c5aff;
+        }
+
+        .cam-actions button.secondary { background: #2a2a36; }
+        .cam-actions button:disabled { opacity: .55; cursor: not-allowed; }
+
+        [hidden] { display: none !important; }
+
+        /* ---------- dashboard tabs (Duty / Activity) ---------- */
+        .tabs-strip {
+            display: flex;
+            gap: 6px;
+            padding: 5px;
+            margin-bottom: 18px;
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 12px;
+        }
+
+        .tabbtn {
+            flex: 1;
+            padding: 11px 8px;
+            border-radius: 9px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: #92929f;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tabbtn:hover { color: #fff; }
+
+        #live[data-tab="duty"] .tabbtn[data-tab="duty"],
+        #live[data-tab="activity"] .tabbtn[data-tab="activity"] {
+            background: #2a2342;
+            color: #fff;
+        }
+
+        #live[data-tab="duty"] #panel-activity,
+        #live[data-tab="activity"] #panel-duty {
+            display: none;
+        }
+
+        /* on phones the bottom bar switches tabs */
+        @media (max-width: 750px) {
+            .tabs-strip { display: none; }
+        }
+
+        /* ---------- activity section (was user_logs.html) ---------- */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .summary .card { margin-bottom: 0; }
+
+        .summary { margin-bottom: 18px; }
+
+        .a-number {
+            margin-top: 6px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .a-number small {
+            margin-left: 3px;
+            font-size: 13px;
+            font-weight: normal;
+            color: #888894;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        .act-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+
+        .act-table th {
+            text-align: left;
+            color: #858591;
+            font-size: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #292934;
+        }
+
+        .act-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #20202a;
+            font-size: 13px;
+        }
+
+        .a-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .a-absent    { background: #6d2929; color: #ff8c8c; }
+        .a-completed { background: #174e35; color: #68e6a1; }
+        .a-onduty    { background: #51349a; color: #d6c4ff; }
+        .a-unpaid    { background: #5a4a1a; color: #ffc45c; }
+
+        .a-empty {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+        }
+
+        .a-note {
+            margin: 12px 0 0;
+            color: #858592;
+            font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .summary { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 750px) {
+
+            .summary { gap: 10px; margin-bottom: 14px; }
+            .summary .card { padding: 14px; }
+            .a-number { font-size: 20px; }
+
+            .table-wrap { overflow-x: visible; }
+
+            /* tables become one card per record */
+            .act-table { min-width: 0; width: 100%; }
+
+            .act-table,
+            .act-table tbody { display: block; }
+
+            .act-table thead { display: none; }
+
+            .act-table tr {
+                display: block;
+                margin-bottom: 10px;
+                background: #181821;
+                border: 1px solid #292934;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .act-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 14px;
+                padding: 9px 12px;
+                text-align: right;
+                border-bottom: 0;
+            }
+
+            .act-table td + td { border-top: 1px solid #23232d; }
+
+            .act-table td::before {
+                content: attr(data-label);
+                flex: none;
+                color: #858592;
+                font-size: 12px;
+                text-align: left;
+            }
+        }
+
+        /* ---------- navigation + polish ---------- */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            height: auto;
+            min-height: 64px;
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        .nav a { transition: color .15s; }
+        .nav a:hover,
+        .nav a.active { color: #fff; }
+
+        .schedule { transition: border-color .2s; }
+
+        .day.today {
+            background: #1d1830;
+            box-shadow: 0 0 0 1px #8c5aff inset;
+        }
+
+        .day .slots > div + div { margin-top: 3px; }
+
+        .start:active, .end:active { transform: scale(.98); }
+
+        .bottom-nav { display: none; }
+
+        @media (max-width: 750px) {
+
+            body {
+                padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .nav {
+                min-height: 56px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            /* Dashboard / Activity / Admin move to the bottom bar on phones;
+               Settings and Logout stay at the top */
+            .nav .nav-main { display: none; }
+
+            .container {
+                margin: 18px auto;
+                padding: 0 14px;
+            }
+
+            .header { margin-bottom: 16px; }
+            .header h1 { font-size: 24px; }
+            .header p { margin: 0; line-height: 1.7; font-size: 14px; }
+
+            .card { padding: 16px; margin-bottom: 14px; }
+            .card h2 { font-size: 18px; }
+
+            .schedule { padding: 14px; }
+            .time { font-size: 18px; }
+
+            .info { gap: 8px; margin-top: 14px; }
+            .info-box { padding: 10px; }
+            .value { font-size: 14px; }
+
+            /* big, thumb-friendly action buttons */
+            button.start,
+            button.end {
+                width: 100%;
+                min-height: 50px;
+                font-size: 16px;
+                margin-top: 14px;
+            }
+
+            .start-form, .end-form { margin: 0; }
+
+            /* week: one compact row per day */
+            .week { grid-template-columns: 1fr; gap: 6px; }
+
+            .day {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 10px 12px;
+            }
+
+            .day .name { margin: 0; }
+            .day .slots { text-align: right; }
+
+            /* bottom navigation bar */
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 40;
+                padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+                background: rgba(16, 16, 22, .96);
+                border-top: 1px solid #292934;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .bn-link {
+                flex: 1 1 0;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+                padding: 7px 0;
+                border-radius: 10px;
+                color: #80808c;
+                text-decoration: none;
+                font-size: 10.5px;
+                font-weight: 600;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .bn-link span {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .bn-link svg {
+                width: 22px;
+                height: 22px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .bn-link.active { color: #fff; background: #2a2342; }
+            .bn-link.active svg { stroke: #b79cff; }
+            .bn-link.logout { color: #ff8c8c; }
+
+            /* camera popup fits small screens */
+            .cam-overlay {
+                padding: max(12px, env(safe-area-inset-top, 0px)) 12px max(12px, env(safe-area-inset-bottom, 0px));
+            }
+
+            .cam-box {
+                max-height: 100%;
+                overflow-y: auto;
+                padding: 16px;
+            }
+
+            .cam-actions { flex-wrap: wrap; }
+            #cam-confirm { flex: 1 1 100%; order: -1; min-height: 48px; }
+            #cam-capture { flex: 2; min-height: 48px; }
+            #cam-cancel, #cam-retake { min-height: 48px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="nav">
+
+    <div class="brand">
+        Duty System
+    </div>
+
+    <div class="nav-links">
+
+        <a href="#duty" class="nav-main active" id="nav-home" data-tab="duty">
+            Dashboard
+        </a>
+
+        <a href="#activity" class="nav-main" id="nav-activity" data-tab="activity">
+            Activity
+        </a>
+
+        {% if session.get("role") == "admin" %}
+            <a href="{{ url_for('admin') }}" class="nav-main">
+                Admin
+            </a>
+        {% endif %}
+
+        <a href="{{ url_for('settings') }}">
+            Settings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <div id="live" data-tab="duty">
+{% endif %}
+<div id="live-root" data-now="{{ now_ts }}" data-rate="{{ user['pay_rate'] or 0 }}">
+
+    <div class="header">
+
+        <h1>
+            Hello, {{ user["username"] }}
+        </h1>
+
+        <p>
+            Today's duty schedule · {{ today_name }} ·
+            <span id="clock">—</span>
+            <span class="live-dot" title="Live"></span>
+        </p>
+
+    </div>
+
+    <div class="tabs-strip" role="tablist">
+        <a href="#duty" class="tabbtn" data-tab="duty" role="tab">Duty</a>
+        <a href="#activity" class="tabbtn" data-tab="activity" role="tab">Activity</a>
+    </div>
+
+    <div class="tab-panel" id="panel-duty">
+
+    <div class="card">
+
+        <h2>
+            Today's Duties
+        </h2>
+
+        {% if cards %}
+
+            {% for c in cards %}
+
+                {% set schedule = c.schedule %}
+                {% set log = c.log %}
+
+                <div class="schedule{% if log %}{% if log['status'] == 'ON DUTY' %} active{% elif log['status'] == 'COMPLETED' %} completed{% else %} absent{% endif %}{% endif %}">
+
+                    <div class="schedule-head">
+
+                        <div class="time">
+                            {{ schedule["start_time"]|time12 }}
+                            →
+                            {{ schedule["off_duty_time"]|time12 }}
+                        </div>
+
+                        <div>
+                            {% if log %}
+                                <span class="status {{ log['status'].replace(' ', '-') }}">
+                                    {{ log["status"] }}
+                                </span>
+                            {% else %}
+                                <span class="status AVAILABLE">
+                                    {% if c.phase == "upcoming" %}UPCOMING{% else %}AVAILABLE{% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    {% if not log and c.phase != "ended" %}
+                        <div
+                            class="countdown"
+                            data-kind="{{ c.phase }}"
+                            data-start="{{ c.start_ts }}"
+                            data-end="{{ c.end_ts }}"
+                        ></div>
+                    {% elif log and log["status"] == "ON DUTY" %}
+                        <div
+                            class="countdown"
+                            data-kind="active"
+                            data-start="{{ c.start_ts }}"
+                            data-end="{{ c.end_ts }}"
+                            data-duty="{{ c.duty_ts }}"
+                            data-mins="{{ ((c.end_ts - c.start_ts) / 60)|round|int }}"
+                        ></div>
+                    {% endif %}
+
+                    <div class="info">
+
+                        <div class="info-box">
+                            <div class="label">Scheduled Start</div>
+                            <div class="value">{{ schedule["start_time"]|time12 }}</div>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="label">Off Duty</div>
+                            <div class="value">{{ schedule["off_duty_time"]|time12 }}</div>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="label">Actual Start</div>
+                            <div class="value">
+                                {% if log and log["duty_start"] %}
+                                    {{ log["duty_start"]|time12 }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <div class="label">Actual Out</div>
+                            <div class="value">
+                                {% if log and log["duty_end"] %}
+                                    {{ log["duty_end"]|time12 }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {% if log and log["status"] == "ON DUTY" %}
+
+                        <div class="warning">
+                            Late: {{ log["late_minutes"]|late_text }}
+                            ·
+                            Earning so far: <b class="earn">₱0.00</b>
+                        </div>
+
+                        <form
+                            class="end-form"
+                            method="POST"
+                            action="{{ url_for('end_duty', log_id=log['id']) }}"
+                        >
+                            <button class="end" type="submit">
+                                Out of Duty
+                            </button>
+                        </form>
+
+                    {% elif log and log["status"] == "COMPLETED" %}
+
+                        <div class="success">
+                            Worked: {{ format_duration(log["worked_seconds"]) }}
+                            ·
+                            Earned: ₱{{ "%.2f"|format(log["earnings"]) }}
+                        </div>
+
+                    {% elif log and log["status"] == "ABSENT" %}
+
+                        <div class="error">
+                            You did not start this duty before the
+                            scheduled off-duty time.
+                        </div>
+
+                    {% elif c.phase == "upcoming" %}
+
+                        <button class="start" type="button" disabled>
+                            Starts at {{ schedule["start_time"]|time12 }}
+                        </button>
+
+                    {% else %}
+
+                        <form
+                            class="start-form"
+                            method="POST"
+                            action="{{ url_for('start_duty', schedule_id=schedule['id']) }}"
+                        >
+                            <button class="start" type="submit">
+                                Start Duty
+                            </button>
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            {% if has_any_schedule %}
+
+                <div class="schedule off">
+
+                    <div class="schedule-head">
+
+                        <div class="time">No duty today</div>
+
+                        <span class="status DAY-OFF">DAY OFF</span>
+
+                    </div>
+
+                    <div style="color:#92929f;margin-top:12px;font-size:14px;">
+                        You are off duty today ({{ today_name }}).
+                    </div>
+
+                    <button class="start" type="button" disabled>
+                        Start Duty
+                    </button>
+
+                </div>
+
+            {% else %}
+
+                <p style="color:#888;">
+                    No duty schedules assigned.
+                </p>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+
+        <h2>This Week</h2>
+
+        <div class="week">
+
+            {% for i in range(7) %}
+
+                <div class="day {% if i == today_weekday %}today{% endif %}">
+
+                    <div class="name">{{ day_names[i] }} <small style="color:#888;">{{ week_dates[i].strftime('%b %d') }}</small></div>
+
+                    <div class="slots">
+
+                    {% if week.get(i) %}
+
+                        {% for s in week[i] %}
+                            <div>
+                                {{ s["start_time"]|time12 }}
+                                →
+                                {{ s["off_duty_time"]|time12 }}
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="off">Day off</div>
+
+                    {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    </div><!-- /panel-duty -->
+
+    <div class="tab-panel" id="panel-activity">
+
+    <div class="summary">
+
+        <div class="card">
+            <div class="label">Pay Rate</div>
+            <div class="a-number">₱{{ user["pay_rate"]|rate }}<small>/min</small></div>
+        </div>
+
+        <div class="card">
+            <div class="label">Total Earnings</div>
+            <div class="a-number">₱{{ "{:,.2f}".format(total_earnings) }}</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Records</div>
+            <div class="a-number">{{ activity_total }}</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Debt Balance</div>
+            <div class="a-number">₱{{ "{:,.2f}".format(debt_outstanding) }}</div>
+            {% if debt_overdue_count %}
+                <div class="label" style="color:#ff8c8c;margin:4px 0 0;">
+                    {{ debt_overdue_count }} overdue
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Activity</h2>
+
+        {% if activity_logs %}
+
+            <div class="table-wrap">
+                <table class="act-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Scheduled</th>
+                            <th>Actual Start</th>
+                            <th>Actual Out</th>
+                            <th>Late</th>
+                            <th>Worked</th>
+                            <th>Earnings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for log in activity_logs %}
+                            <tr>
+                                <td data-label="Date">{{ log["duty_date"] }}</td>
+
+                                <td data-label="Status">
+                                    {% if log["status"] == "ABSENT" %}
+                                        <span class="a-badge a-absent">ABSENT</span>
+                                    {% elif log["status"] == "COMPLETED" %}
+                                        <span class="a-badge a-completed">COMPLETED</span>
+                                    {% else %}
+                                        <span class="a-badge a-onduty">ON DUTY</span>
+                                    {% endif %}
+                                </td>
+
+                                <td data-label="Scheduled">{{ log["scheduled_start"]|time12 }} → {{ log["scheduled_end"]|time12 }}</td>
+
+                                <td data-label="Actual Start">{% if log["duty_start"] %}{{ log["duty_start"]|time12 }}{% else %}—{% endif %}</td>
+
+                                <td data-label="Actual Out">{% if log["duty_end"] %}{{ log["duty_end"]|time12 }}{% else %}—{% endif %}</td>
+
+                                <td data-label="Late">{{ log["late_minutes"]|late_text }}</td>
+
+                                <td data-label="Worked">{{ format_duration(log["worked_seconds"]) }}</td>
+
+                                <td data-label="Earnings">₱{{ "%.2f"|format(log["earnings"]) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            {% if activity_total > activity_limit %}
+                <p class="a-note">Showing the latest {{ activity_limit }} of {{ activity_total }} records.</p>
+            {% endif %}
+
+        {% else %}
+
+            <div class="a-empty">No activity yet.</div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="card">
+
+        <h2>Debts</h2>
+
+        {% if debts %}
+
+            <div class="table-wrap">
+                <table class="act-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date Added</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for dbt in debts %}
+                            <tr>
+                                <td data-label="Date Added">{{ dbt["created_at"][:10] }}</td>
+                                <td data-label="Amount">₱{{ "{:,.2f}".format(dbt["amount"]) }}</td>
+                                <td data-label="Reason">{{ dbt["reason"] }}</td>
+                                <td data-label="Due Date">{{ dbt["due_date"] }}</td>
+                                <td data-label="Status">
+                                    {% if dbt["status"] == "PAID" %}
+                                        <span class="a-badge a-completed">PAID</span>
+                                        {% if dbt["paid_at"] %}
+                                            <div class="label" style="margin:4px 0 0;">{{ dbt["paid_at"][:10] }}</div>
+                                        {% endif %}
+                                    {% elif dbt["overdue"] %}
+                                        <span class="a-badge a-absent">OVERDUE</span>
+                                    {% else %}
+                                        <span class="a-badge a-unpaid">UNPAID</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        {% else %}
+
+            <div class="a-empty">No debts.</div>
+
+        {% endif %}
+
+    </div>
+
+    </div><!-- /panel-activity -->
+
+</div>
+{% if not partial %}
+    </div>
+
+</div>
+
+<script>
+(function () {
+
+    const live = document.getElementById("live");
+    const POLL_MS = 5000;
+
+    let offset = 0;              // server time - device time (ms)
+    let hasOffset = false;
+    let signature = "";
+    let lastRefresh = 0;
+    let busy = false;
+    let pressing = false;
+
+    // Measure how far the device clock is from the Python server clock.
+    // Always uses the newest measurement, so changing the device time
+    // is detected right away. sentAt compensates network latency.
+    function applyServerTime(serverSec, sentAt, receivedAt) {
+        if (!Number.isFinite(serverSec) || serverSec <= 0) return;
+
+        const received = receivedAt || Date.now();
+        const ref = sentAt ? (sentAt + received) / 2 : received;
+        offset = (serverSec * 1000) - ref;
+        hasOffset = true;
+    }
+
+    function serverNow() {
+        return Date.now() + offset;
+    }
+
+    function pad(n) {
+        return String(n).padStart(2, "0");
+    }
+
+    function fmt(sec) {
+        sec = Math.max(0, Math.floor(sec));
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        return pad(h) + ":" + pad(m) + ":" + pad(s);
+    }
+
+    async function refresh() {
+
+        if (busy) return;
+        busy = true;
+        lastRefresh = Date.now();
+        const sentAt = lastRefresh;
+
+        try {
+
+            const res = await fetch("{{ url_for('dashboard_live') }}", {
+                cache: "no-store",
+                credentials: "same-origin"
+            });
+
+            if (res.redirected || !res.ok) {
+                window.location.href = "{{ url_for('login') }}";
+                return;
+            }
+
+            const html = await res.text();
+            const receivedAt = Date.now();
+            const sig = html.replace(/data-now="[^"]*"/, "");
+
+            // Calibrate from the latest server timestamp, even if the
+            // dashboard content itself has not changed.
+            const m = html.match(/data-now="([^"]*)"/);
+            if (m) applyServerTime(parseFloat(m[1]), sentAt, receivedAt);
+
+            if (sig !== signature && !pressing) {
+                signature = sig;
+                live.innerHTML = html;
+            }
+
+            tick();
+
+        } catch (e) {
+            // offline: keep the last state, try again next poll
+        } finally {
+            busy = false;
+        }
+    }
+
+    function tick() {
+
+        const t = serverNow();
+        const nowSec = t / 1000;
+
+        const clock = document.getElementById("clock");
+
+        if (clock) {
+            clock.textContent = new Date(t).toLocaleTimeString("en-PH", {
+                timeZone: "Asia/Manila",
+                hour: "numeric",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+        }
+
+        const root = document.getElementById("live-root");
+        const rate = root ? parseFloat(root.dataset.rate) || 0 : 0;
+
+        let boundary = false;
+
+        document.querySelectorAll(".countdown").forEach(function (el) {
+
+            const kind = el.dataset.kind;
+            const start = parseFloat(el.dataset.start);
+            const end = parseFloat(el.dataset.end);
+
+            if (kind === "upcoming") {
+
+                if (nowSec >= start) { boundary = true; return; }
+                el.textContent = "Starts in " + fmt(start - nowSec);
+
+            } else if (kind === "open") {
+
+                if (nowSec >= end) { boundary = true; return; }
+                el.textContent = "Duty window open · ends in " + fmt(end - nowSec);
+
+            } else if (kind === "active") {
+
+                const duty = parseFloat(el.dataset.duty);
+                const capped = Math.min(nowSec, end);
+
+                el.textContent = nowSec >= end
+                    ? "Past off-duty time · pay stops at the scheduled off-duty time"
+                    : "On duty · " + fmt(nowSec - duty) + " · ends in " + fmt(end - nowSec);
+
+                // same rule as the server: whole minutes, capped at off-duty
+                const worked = Math.max(
+                    0,
+                    Math.floor(capped / 60) * 60 - Math.floor(duty / 60) * 60
+                );
+
+                const earn = el.closest(".schedule").querySelector(".earn");
+
+                if (earn) {
+                    const perMin = rate;  // pay rate is pesos per minute
+                    earn.textContent = "₱" + (worked / 60 * perMin).toFixed(2);
+                }
+            }
+        });
+
+        // a window just opened/closed: pull the new state right away
+        if (boundary && Date.now() - lastRefresh > 3000) {
+            refresh();
+        }
+    }
+
+    document.addEventListener("pointerdown", function (e) {
+        if (e.target.closest && e.target.closest("button")) {
+            pressing = true;
+            setTimeout(function () { pressing = false; }, 3000);
+        }
+    }, true);
+
+    ["pointerup", "pointercancel", "dragend"].forEach(function (n) {
+        document.addEventListener(n, function () {
+            setTimeout(function () { pressing = false; }, 400);
+        }, true);
+    });
+
+    const firstRoot = document.getElementById("live-root");
+    if (firstRoot) applyServerTime(parseFloat(firstRoot.dataset.now));
+    signature = live.innerHTML.replace(/data-now="[^"]*"/, "");
+    tick();
+    refresh();
+
+    setInterval(tick, 1000);
+
+    setInterval(function () {
+        if (!document.hidden) refresh();
+    }, POLL_MS);
+
+    document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) refresh();
+    });
+
+})();
+</script>
+
+
+<script>
+(function () {
+
+    const live = document.getElementById("live");
+
+    function setActive(ids, on) {
+        ids.forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle("active", on);
+        });
+    }
+
+    function show(name) {
+
+        if (name !== "activity") name = "duty";
+
+        live.dataset.tab = name;
+
+        setActive(["nav-activity", "bn-activity"], name === "activity");
+        setActive(["nav-home", "bn-home"], name === "duty");
+
+        const hash = "#" + name;
+        if (location.hash !== hash) history.replaceState(null, "", hash);
+    }
+
+    document.addEventListener("click", function (e) {
+        const a = e.target.closest && e.target.closest("a[data-tab]");
+        if (!a) return;
+        e.preventDefault();
+        show(a.dataset.tab);
+        window.scrollTo(0, 0);
+    });
+
+    window.addEventListener("hashchange", function () {
+        show(location.hash.slice(1));
+    });
+
+    // /dashboard#activity opens the Activity tab, anything else opens Duty
+    show(location.hash.slice(1));
+
+})();
+</script>
+
+<!-- ===== Bottom navigation (phones) ===== -->
+<nav class="bottom-nav" aria-label="Main">
+
+    <a class="bn-link active" href="#duty" id="bn-home" data-tab="duty">
+        <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg>
+        <span>Home</span>
+    </a>
+
+    <a class="bn-link" href="#activity" id="bn-activity" data-tab="activity">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+        <span>Activity</span>
+    </a>
+
+    {% if session.get("role") == "admin" %}
+    <a class="bn-link" href="{{ url_for('admin') }}">
+        <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+        <span>Admin</span>
+    </a>
+    {% endif %}
+
+</nav>
+
+<!-- ===== Camera modal: photo required before starting duty ===== -->
+<div class="cam-overlay" id="cam-modal" data-user="{{ session['user_id'] }}" role="dialog" aria-modal="true" aria-labelledby="cam-title">
+    <div class="cam-box">
+
+        <h3 id="cam-title">Take a photo to start duty</h3>
+        <p id="cam-hint">Face the camera, then tap Capture.</p>
+
+        <div class="cam-view">
+            <video id="cam-video" autoplay playsinline muted></video>
+            <img id="cam-preview" alt="Captured photo" hidden>
+        </div>
+
+        <canvas id="cam-canvas" hidden></canvas>
+
+        <div class="cam-msg" id="cam-msg" hidden></div>
+
+        <input type="file" id="cam-file" accept="image/*" capture="user" hidden>
+
+        <div class="cam-actions">
+            <button type="button" class="secondary" id="cam-cancel">Cancel</button>
+            <button type="button" class="secondary" id="cam-retake" hidden>Retake</button>
+            <button type="button" id="cam-capture">Capture</button>
+            <button type="button" id="cam-confirm" hidden>Confirm &amp; Start</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+
+    const modal    = document.getElementById("cam-modal");
+    const video    = document.getElementById("cam-video");
+    const preview  = document.getElementById("cam-preview");
+    const canvas   = document.getElementById("cam-canvas");
+    const msg      = document.getElementById("cam-msg");
+    const fileIn   = document.getElementById("cam-file");
+    const hint     = document.getElementById("cam-hint");
+    const bCancel  = document.getElementById("cam-cancel");
+    const bRetake  = document.getElementById("cam-retake");
+    const bCapture = document.getElementById("cam-capture");
+    const bConfirm = document.getElementById("cam-confirm");
+
+    const MAX_W = 640;
+
+    let stream = null;
+    let action = "";
+    let photo  = "";
+    let sending = false;
+
+    function showMsg(text) {
+        msg.textContent = text;
+        msg.hidden = !text;
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(function (t) { t.stop(); });
+            stream = null;
+        }
+        video.srcObject = null;
+    }
+
+    // state: "live" (camera running) or "review" (photo taken)
+    function setState(state) {
+        const review = state === "review";
+        video.hidden    = review;
+        preview.hidden  = !review;
+        bCapture.hidden = review;
+        bRetake.hidden  = !review;
+        bConfirm.hidden = !review;
+        hint.textContent = review
+            ? "Is the photo clear? Confirm to start duty, or retake."
+            : "Face the camera, then tap Capture.";
+    }
+
+    async function startCamera() {
+
+        photo = "";
+        showMsg("");
+        setState("live");
+        bCapture.disabled = true;
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            fallbackToFile("Live camera is not available on this connection (it needs HTTPS or localhost). Use your phone camera instead.");
+            return;
+        }
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user", width: { ideal: 960 }, height: { ideal: 720 } },
+                audio: false
+            });
+            video.srcObject = stream;
+            await video.play().catch(function () {});
+            bCapture.disabled = false;
+        } catch (e) {
+            fallbackToFile("Could not open the camera. Allow camera permission, or use your phone camera instead.");
+        }
+    }
+
+    function fallbackToFile(text) {
+        showMsg(text);
+        bCapture.disabled = false;
+        bCapture.dataset.mode = "file";
+        bCapture.textContent = "Open Camera";
+    }
+
+    function resetCaptureButton() {
+        delete bCapture.dataset.mode;
+        bCapture.textContent = "Capture";
+    }
+
+    function showPhoto(dataUrl) {
+        photo = dataUrl;
+        preview.src = dataUrl;
+        stopCamera();
+        setState("review");
+    }
+
+    function openModal(formAction) {
+        action = formAction;
+        sending = false;
+        bConfirm.disabled = false;
+        bConfirm.textContent = "Confirm & Start";
+        resetCaptureButton();
+        modal.classList.add("open");
+        startCamera();
+    }
+
+    function closeModal() {
+        stopCamera();
+        modal.classList.remove("open");
+        photo = "";
+        fileIn.value = "";
+    }
+
+    // Intercept "Start Duty" (forms are re-rendered by live refresh, so delegate)
+    document.addEventListener("submit", function (e) {
+        const f = e.target;
+        if (f && f.classList && f.classList.contains("start-form")) {
+            e.preventDefault();
+            openModal(f.getAttribute("action"));
+        }
+    }, true);
+
+    bCapture.addEventListener("click", function () {
+
+        if (bCapture.dataset.mode === "file") {
+            fileIn.click();
+            return;
+        }
+
+        if (!video.videoWidth) return;
+
+        const scale = Math.min(1, MAX_W / video.videoWidth);
+        canvas.width  = Math.round(video.videoWidth * scale);
+        canvas.height = Math.round(video.videoHeight * scale);
+        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        showPhoto(canvas.toDataURL("image/jpeg", 0.7));
+    });
+
+    fileIn.addEventListener("change", function () {
+
+        const file = fileIn.files && fileIn.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+
+        img.onload = function () {
+            const scale = Math.min(1, MAX_W / img.width);
+            canvas.width  = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            showMsg("");
+            showPhoto(canvas.toDataURL("image/jpeg", 0.7));
+        };
+
+        img.onerror = function () {
+            URL.revokeObjectURL(url);
+            showMsg("Could not read that photo. Please try again.");
+        };
+
+        img.src = url;
+        fileIn.value = "";
+    });
+
+    bRetake.addEventListener("click", function () {
+        photo = "";
+        if (bCapture.dataset.mode === "file") {
+            setState("live");
+            showMsg("");
+            fileIn.click();
+        } else {
+            startCamera();
+        }
+    });
+
+    bConfirm.addEventListener("click", function () {
+
+        if (!photo || sending) return;
+        sending = true;
+        bConfirm.disabled = true;
+        bConfirm.textContent = "Starting...";
+
+        // normal POST so the server flash message + redirect still work
+        const f = document.createElement("form");
+        f.method = "POST";
+        f.action = action;
+
+        const inp = document.createElement("input");
+        inp.type = "hidden";
+        inp.name = "photo";
+        inp.value = photo;
+
+        // tells the server which user this dashboard was opened for
+        const who = document.createElement("input");
+        who.type = "hidden";
+        who.name = "expected_user";
+        who.value = modal.dataset.user || "";
+
+        f.appendChild(inp);
+        f.appendChild(who);
+        document.body.appendChild(f);
+        f.submit();
+    });
+
+    bCancel.addEventListener("click", closeModal);
+
+    // coming back to this page (back button / restored tab):
+    // never keep an old photo in memory
+    window.addEventListener("pageshow", function (e) {
+        if (e.persisted) closeModal();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal.classList.contains("open") && !sending) closeModal();
+    });
+
+})();
+</script>
+
+</body>
+</html>{% endif %}

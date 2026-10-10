@@ -1,0 +1,4085 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b0b0f;
+            color: #eee;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav {
+            height: 64px;
+            background: #101016;
+            border-bottom: 1px solid #292934;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 18px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        select {
+            color-scheme: dark;
+        }
+
+        select option {
+            background: #1a1a23;
+            color: #fff;
+        }
+
+        input,
+        select {
+            background: #1a1a23;
+            color: white;
+            border: 1px solid #30303b;
+            border-radius: 7px;
+            padding: 10px;
+        }
+
+        button {
+            background: #8054e8;
+            color: white;
+            border: 0;
+            border-radius: 7px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button.danger {
+            background: #8c3030;
+        }
+
+        button.gray {
+            background: #363640;
+        }
+
+        .create {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px auto;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            color: #888894;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #24242d;
+            vertical-align: middle;
+        }
+
+        .schedule-form {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .schedule-form input {
+            width: 120px;
+        }
+
+        .schedule {
+            margin-top: 10px;
+            padding: 10px;
+            background: #191921;
+            border-radius: 8px;
+        }
+
+        .schedule small {
+            color: #888;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .status-col h3 {
+            margin: 0 0 12px;
+            font-size: 15px;
+        }
+
+        .count {
+            display: inline-block;
+            min-width: 24px;
+            padding: 2px 8px;
+            margin-left: 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .count.on { background: #174e35; color: #68e6a1; }
+        .count.off { background: #363640; color: #bbb; }
+
+        .person {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #191921;
+            border-radius: 8px;
+        }
+
+        .person small { color: #888; }
+
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+
+        .dot.on { background: #4ade80; }
+        .dot.off { background: #555; }
+
+        .none { color: #777; font-size: 13px; }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #292934;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: #888894;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            padding: 12px 18px;
+            margin-bottom: -1px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #ddd;
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            border-bottom-color: #8054e8;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .range-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .range-field label {
+            display: block;
+            margin-bottom: 5px;
+            color: #888894;
+            font-size: 12px;
+        }
+
+        .range-form input[type="date"] {
+            color-scheme: dark;
+        }
+
+        .earn-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .earn-box {
+            padding: 18px;
+            background: #191921;
+            border-radius: 10px;
+        }
+
+        .earn-big {
+            margin: 6px 0;
+            font-size: 28px;
+            font-weight: bold;
+            color: #68e6a1;
+        }
+
+        .earn-label {
+            color: #888894;
+            font-size: 12px;
+        }
+
+        tfoot td {
+            border-bottom: 0;
+            border-top: 2px solid #3a3a46;
+        }
+
+        .ps-preset select { min-width: 230px; }
+
+        .ps-actions { white-space: nowrap; }
+
+        .ps-actions a,
+        .ps-print {
+            display: inline-block;
+            padding: 8px 13px;
+            background: #8054e8;
+            color: #fff;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .ps-actions a:hover,
+        .ps-print:hover { background: #6944df; }
+
+        .ps-print { background: #363640; padding: 10px 14px; }
+        .ps-print:hover { background: #454552; }
+
+        .ps-sub { color: #888894; font-size: 12px; margin-top: 3px; }
+
+        .ps-off {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: #2a2a36;
+            color: #aaa;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .ps-state {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .ps-state.open { background: #5a4a1a; color: #ffc45c; }
+        .ps-state.closed { background: #174e35; color: #68e6a1; }
+
+        @media (max-width: 700px) {
+            .ps-preset, .ps-preset select { width: 100%; min-width: 0; }
+        }
+
+        .note {
+            margin: 14px 0 0;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .flash {
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #1b1b24;
+            margin-bottom: 10px;
+        }
+
+        @media(max-width: 800px) {
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .create {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                min-width: 950px;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+        }
+
+
+        /* ---------- Duty Status (calendar) ---------- */
+
+        .date-nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .date-nav input[type="date"] {
+            color-scheme: dark;
+        }
+
+        .navbtn {
+            display: inline-block;
+            margin: 0;
+            padding: 10px 14px;
+            background: #363640;
+            color: #fff !important;
+            border-radius: 7px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbtn:hover { background: #46465a; }
+
+        .navbtn.today { background: #8054e8; }
+
+        .date-title {
+            margin: 0 0 16px;
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .date-title strong {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .st-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .st-chip {
+            padding: 10px 16px;
+            background: #191921;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #888894;
+        }
+
+        .st-chip b {
+            display: block;
+            margin-top: 3px;
+            font-size: 22px;
+            color: #fff;
+        }
+
+        .st-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .st-on_duty   { background: #51349a; color: #d6c4ff; }
+        .st-completed { background: #174e35; color: #68e6a1; }
+        .st-absent    { background: #6d2929; color: #ff8c8c; }
+        .st-waiting   { background: #5a4a1a; color: #ffc45c; }
+        .st-upcoming  { background: #363640; color: #bbb; }
+        .st-no_record { background: #2a2a33; color: #888; }
+
+        .st-wrap { overflow-x: auto; }
+
+        .st-wrap table { min-width: 760px; }
+
+        .dayoff { margin-top: 18px; color: #888894; font-size: 13px; }
+
+        .dayoff span {
+            display: inline-block;
+            margin: 4px 6px 0 0;
+            padding: 4px 10px;
+            background: #191921;
+            border-radius: 12px;
+            color: #aaa;
+        }
+
+        small.late { color: #ffc45c; }
+
+
+        /* ---------- Users & Schedules ---------- */
+
+        .users-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .users-head h2 { margin: 0; }
+
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-wrap input {
+            width: 260px;
+            max-width: 100%;
+        }
+
+        .user-card {
+            margin-bottom: 14px;
+            padding: 16px;
+            background: #191921;
+            border: 1px solid #292934;
+            border-radius: 12px;
+        }
+
+        .user-top {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .user-top small { color: #888; }
+
+        .inline-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inline-form label { color: #888894; font-size: 12px; }
+
+        .inline-form input[type="number"] { width: 100px; }
+
+        .msg { font-size: 13px; }
+        .msg.ok { color: #63e49a; }
+        .msg.err { color: #ff7777; }
+        .msg.dirty { color: #ffc45c; }
+
+
+        /* ---------- Pagination ---------- */
+
+        .pager {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+            color: #888894;
+            font-size: 13px;
+        }
+
+        .pager select {
+            padding: 6px 8px;
+            margin-left: 6px;
+        }
+
+        .pager-pages {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pager-pages button {
+            min-width: 34px;
+            padding: 7px 10px;
+            background: #363640;
+        }
+
+        .pager-pages button.active { background: #8054e8; }
+
+        .pager-pages button:disabled {
+            opacity: .4;
+            cursor: default;
+        }
+
+        .pager-pages .dots { padding: 0 4px; }
+
+
+        /* ---------- Account management ---------- */
+
+        [hidden] { display: none !important; }
+
+        .search-wrap { flex-wrap: wrap; }
+
+        .search-wrap select { padding: 10px; }
+
+        .user-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 10px;
+            background: #363640;
+            color: #ccc;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .pill.you { background: #3b3b52; color: #c9c9ff; }
+
+        .user-card[data-role="admin"] .role-pill { background: #51349a; color: #d6c4ff; }
+
+        .user-card[data-role="admin"] .emp-only,
+        .user-card[data-role="admin"] .delete-form { display: none; }
+
+        .acct-actions { gap: 6px; }
+
+        .acct-actions form { margin: 0; }
+
+        .card-msg { margin: -4px 0 12px; }
+
+        .card-msg:empty { display: none; }
+
+        button.small { padding: 5px 10px; font-size: 12px; }
+
+        .edit-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 30px;
+            padding: 14px;
+            margin-bottom: 14px;
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 10px;
+        }
+
+        .edit-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 4px;
+            color: #888894;
+            font-size: 12px;
+        }
+
+        .field input { width: 190px; }
+
+        .pay-row { margin-bottom: 14px; }
+
+        #toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            max-width: 340px;
+            padding: 12px 16px;
+            background: #1b1b24;
+            border: 1px solid #3a3a46;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.5);
+            font-size: 14px;
+        }
+
+        /* ---------- Debts ---------- */
+
+        .debt-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .debt-head h2 { margin: 0; }
+
+        .st-wrap table.debt-table { min-width: 900px; }
+
+        .debt-table small.sub {
+            display: block;
+            margin-top: 3px;
+            color: #777;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .debt-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .debt-actions form { margin: 0; }
+
+        button.sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, .65);
+        }
+
+        .modal-backdrop[hidden] { display: none; }
+
+        .modal {
+            width: 100%;
+            max-width: 440px;
+            max-height: 100%;
+            overflow-y: auto;
+            padding: 24px;
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 14px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .6);
+        }
+
+        .modal h3 {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .modal .field { margin-bottom: 14px; }
+
+        .modal .field label {
+            display: block;
+            margin-bottom: 6px;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .modal input,
+        .modal select,
+        .modal textarea {
+            width: 100%;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .modal textarea {
+            min-height: 80px;
+            resize: vertical;
+            background: #1a1a23;
+            color: white;
+            border: 1px solid #30303b;
+            border-radius: 7px;
+            padding: 10px;
+        }
+
+        .modal input:focus,
+        .modal select:focus,
+        .modal textarea:focus {
+            outline: none;
+            border-color: #8054e8;
+        }
+
+        .money { position: relative; }
+
+        .money > span {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            pointer-events: none;
+        }
+
+        .money input { padding-left: 28px; }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+
+        /* ---------- custom time picker ---------- */
+        .tp { display: inline-block; vertical-align: middle; }
+
+        .tp-btn {
+            min-width: 124px;
+            padding: 8px 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #1a1a23;
+            color: #fff;
+            border: 1px solid #30303b;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .tp-btn:hover,
+        .tp-btn.open { border-color: #8054e8; background: #1a1a23; }
+
+        .tp-btn svg { width: 15px; height: 15px; opacity: .6; }
+
+        .tp-pop {
+            position: fixed;
+            z-index: 300;
+            width: 232px;
+            padding: 10px;
+            background: #13131b;
+            border: 1px solid #3a3a48;
+            border-radius: 12px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, .7);
+        }
+
+        .tp-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+
+        .tp-col {
+            max-height: 210px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3a3a48 transparent;
+        }
+
+        .tp-col button {
+            display: block;
+            width: 100%;
+            padding: 8px 0;
+            margin-bottom: 2px;
+            background: transparent;
+            color: #c9c9d4;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .tp-col button:hover { background: #24242f; }
+
+        .tp-col button.sel {
+            background: #8054e8;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .tp-foot {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #292934;
+        }
+
+        .tp-foot button { padding: 6px 14px; font-size: 13px; }
+
+        .cal-modal { max-width: 760px; }
+
+        .cal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .cal-head h3 { margin: 0; }
+
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cal-nav strong {
+            min-width: 150px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .cal-week,
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .cal-week div {
+            text-align: center;
+            color: #888894;
+            font-size: 12px;
+            padding-bottom: 4px;
+        }
+
+        .cal-day {
+            min-height: 66px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            background: #1a1a23;
+            color: #ccc;
+            border: 1px solid #30303b;
+            border-radius: 9px;
+            font-weight: normal;
+            text-align: left;
+        }
+
+        .cal-day {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: pan-y;
+        }
+
+        .cal-day:hover { border-color: #8054e8; }
+
+        .cal-day .n { font-weight: bold; font-size: 14px; }
+
+        .cal-day .t {
+            font-size: 10px;
+            line-height: 1.2;
+            color: #d6c4ff;
+            pointer-events: none;
+        }
+
+        .cal-grid { touch-action: pan-y; }
+
+        .cal-day.on {
+            background: #51349a;
+            border-color: #8054e8;
+            color: #fff;
+        }
+
+        .cal-day.today .n { color: #63e49a; }
+
+        .cal-day.past {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .cal-day.blank {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .cal-tools {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #292934;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .cal-tools .sp { flex: 1; }
+
+        .cal-legend {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #888894;
+        }
+
+        .cal-legend i {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 0 4px 0 10px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+
+
+        @media (max-width: 600px) {
+            .cal-day { min-height: 52px; padding: 4px; }
+            .cal-day .t { display: none; }
+        }
+
+
+
+        /* ---------- Desktop tabs ---------- */
+
+        .tabs {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            display: flex;
+            gap: 4px;
+            margin: 0 0 20px;
+            padding: 5px;
+            background: rgba(19, 19, 27, .96);
+            border: 1px solid #292934;
+            border-radius: 14px;
+            overflow-x: auto;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 10px 16px;
+            background: transparent;
+            color: #888894;
+            border: 0;
+            border-radius: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: background .15s, color .15s;
+        }
+
+        .tab-btn svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .tab-btn:hover { background: #1d1d28; color: #ddd; }
+
+        .tab-btn.active {
+            background: #2a2342;
+            color: #fff;
+            border: 0;
+        }
+
+        .tab-btn.active svg { stroke: #b79cff; }
+
+
+        /* ---------- Duty Status: week calendar ---------- */
+
+        .wk {
+            margin-bottom: 18px;
+            padding: 14px;
+            background: #191921;
+            border: 1px solid #272732;
+            border-radius: 14px;
+        }
+
+        .wk-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .wk-title { font-size: 16px; font-weight: bold; }
+
+        .wk-arrow {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a35;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 22px;
+            text-decoration: none;
+        }
+
+        .wk-arrow:hover { background: #3a3a4a; }
+
+        .wk-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .wk-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 2px 8px;
+            background: #13131b;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #aaa;
+            text-decoration: none;
+            transition: background .15s, border-color .15s;
+        }
+
+        .wk-day:hover { background: #1f1f2b; }
+
+        .wk-name {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #777784;
+        }
+
+        .wk-num { font-size: 19px; font-weight: bold; color: #ddd; }
+
+        .wk-dots {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 14px;
+            font-size: 11px;
+            color: #9a8bd6;
+        }
+
+        .wk-dots i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #8054e8;
+        }
+
+        .wk-day.today { border-color: #4a3d7a; }
+
+        .wk-day.today .wk-name { color: #b79cff; }
+
+        .wk-day.sel { background: #8054e8; border-color: #8054e8; }
+
+        .wk-day.sel .wk-name,
+        .wk-day.sel .wk-num,
+        .wk-day.sel .wk-dots { color: #fff; }
+
+        .wk-day.sel .wk-dots i { background: #fff; }
+
+        .wk-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .wk-pick {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #888894;
+            font-size: 12px;
+        }
+
+        .wk-pick input { color-scheme: dark; }
+
+
+        /* ---------- Duty Status: not on duty ---------- */
+
+        .off-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: #191921;
+            border: 1px dashed #333342;
+            border-radius: 14px;
+        }
+
+        .off-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .off-head .count { margin-left: 0; }
+
+        .off-head small { color: #777784; }
+
+        .off-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .off-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 5px;
+            background: #13131b;
+            border: 1px solid #272732;
+            border-radius: 20px;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .off-av {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #2c2c38;
+            color: #9a9aa8;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ---------- Duty Status cards ---------- */
+
+        .duty-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 14px;
+        }
+
+        .duty-card {
+            position: relative;
+            padding: 16px;
+            background: #191921;
+            border: 1px solid #272732;
+            border-left: 4px solid #444452;
+            border-radius: 14px;
+            transition: border-color .15s, transform .15s;
+        }
+
+        .duty-card:hover { border-color: #3a3a4a; }
+
+        .duty-card.s-on_duty   { border-left-color: #8054e8; }
+        .duty-card.s-completed { border-left-color: #2fb878; }
+        .duty-card.s-absent    { border-left-color: #d54b4b; }
+        .duty-card.s-waiting   { border-left-color: #e0a63a; }
+
+        .dc-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .dc-avatar {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #2a2342;
+            color: #d6c4ff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .dc-who { flex: 1; min-width: 0; }
+
+        .dc-who strong {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dc-sched {
+            display: block;
+            margin-top: 3px;
+            color: #888894;
+            font-size: 12px;
+        }
+
+        .dc-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .dc-stats > div {
+            padding: 8px 9px;
+            background: #13131b;
+            border-radius: 9px;
+            min-width: 0;
+        }
+
+        .dc-stats label {
+            display: block;
+            color: #777784;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .dc-stats b {
+            display: block;
+            margin-top: 4px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .dc-stats small.late { display: block; margin-top: 2px; font-size: 10px; }
+
+        .dc-actions { margin-top: 12px; }
+
+        .dc-actions form { margin: 0; }
+
+        .dc-actions button { width: 100%; }
+
+        .st-chip { flex: 1 1 110px; }
+
+        .dayoff span { margin-bottom: 4px; }
+
+
+        /* ---------- Bottom navigation (phones / small screens) ---------- */
+
+        .bottom-nav { display: none; }
+
+        @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+
+            body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+
+            .nav { padding: 0 16px; height: 56px; }
+
+            .nav a { margin-left: 12px; font-size: 14px; }
+
+            .container { margin: 16px auto; padding: 0 12px; }
+
+            .card { padding: 16px; border-radius: 12px; }
+
+            /* the tab strip is replaced by the bottom bar */
+            .tabs { display: none; }
+
+            .bottom-nav {
+                display: flex;
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 40;
+                padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+                background: rgba(16, 16, 22, .96);
+                border-top: 1px solid #292934;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+
+            .bn-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+                padding: 7px 0;
+                background: transparent;
+                color: #80808c;
+                border-radius: 10px;
+                font-size: 9.5px;
+                font-weight: 600;
+            }
+
+            .bn-btn span {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .bn-btn svg {
+                width: 21px;
+                height: 21px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .bn-btn.active { color: #fff; background: #2a2342; }
+
+            .bn-btn.active svg { stroke: #b79cff; }
+
+            .dc-stats { grid-template-columns: repeat(2, 1fr); }
+
+            .duty-list { grid-template-columns: 1fr; }
+
+            .wk { padding: 10px; }
+
+            .wk-days { gap: 4px; }
+
+            .wk-day { padding: 8px 0 6px; border-radius: 10px; }
+
+            .wk-num { font-size: 16px; }
+
+            .wk-foot { justify-content: center; }
+
+            .date-nav input[type="date"] { flex: 1; min-width: 130px; }
+        }
+
+
+        /* ---------- Tables become cards on phones (no sideways scrolling) ---------- */
+
+        @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+
+            .table-wrap,
+            .st-wrap { overflow-x: visible; }
+
+            table.stack { min-width: 0 !important; width: 100%; }
+
+            table.stack,
+            table.stack tbody,
+            table.stack tfoot { display: block; }
+
+            table.stack thead { display: none; }
+
+            table.stack tr {
+                display: block;
+                margin-bottom: 10px;
+                padding: 10px 14px;
+                background: #191921;
+                border: 1px solid #272732;
+                border-radius: 12px;
+            }
+
+            table.stack td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                padding: 7px 0;
+                border: 0;
+                text-align: right;
+                overflow-wrap: anywhere;
+            }
+
+            table.stack td + td { border-top: 1px solid #23232d; }
+
+            table.stack td[data-label]::before {
+                content: attr(data-label);
+                flex: 0 0 auto;
+                color: #888894;
+                font-size: 12px;
+                text-align: left;
+            }
+
+            /* total / empty-message rows */
+            table.stack tr.wide {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            table.stack tr.wide td {
+                width: auto;
+                border: 0 !important;
+                text-align: left;
+            }
+
+            table.stack tr.wide td:last-child { text-align: right; }
+
+            table.stack tfoot tr {
+                background: #1f1b33;
+                border-color: #3a2f66;
+            }
+
+            table.stack td.nolabel { justify-content: flex-end; }
+
+            table.stack td form { margin: 0; }
+        }
+
+
+        /* ---------- Duty Logs tab (with start photo) ---------- */
+        .dl-photo {
+            display: block;
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            border: 1px solid #292934;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a1a23;
+            cursor: zoom-in;
+        }
+
+        .dl-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .dl-none { color: #6c6c78; }
+
+        .dl-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(0,0,0,.85);
+            cursor: zoom-out;
+        }
+
+        .dl-lightbox.open { display: flex; }
+
+        .dl-lightbox img {
+            max-width: min(92vw, 720px);
+            max-height: 78vh;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+
+        .dl-lightbox .cap {
+            color: #ddd;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+<div class="nav">
+
+    <strong>
+        Admin Panel
+    </strong>
+
+    <div>
+
+        <a href="{{ url_for('settings') }}">
+            Settings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            <div class="flash">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <div class="tabs">
+        <button type="button" class="tab-btn" data-tab="status"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Duty Status</span></button>
+        <button type="button" class="tab-btn" data-tab="users"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2.1.7 3.5 2.6 3.5 5.7"/></svg><span>Employees</span></button>
+        <button type="button" class="tab-btn" data-tab="roles"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>Roles</span></button>
+        <button type="button" class="tab-btn" data-tab="earnings"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span>Earnings</span></button>
+        <button type="button" class="tab-btn" data-tab="payslips"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Payslips</span></button>
+        <button type="button" class="tab-btn" data-tab="debts"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>Debts</span></button>
+        <button type="button" class="tab-btn" data-tab="activity"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>Recent Activity</span></button>
+        <button type="button" class="tab-btn" data-tab="dutylogs"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.2-2h5.6L16 5"/></svg><span>Duty Logs</span></button>
+        <button type="button" class="tab-btn" data-tab="adminlog"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>Admin Activity</span></button>
+    </div>
+
+    <div class="tab-panel" id="tab-status">
+
+    <!-- ================================================= -->
+    <!-- DUTY STATUS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>Duty Status</h2>
+
+        <div class="wk">
+
+            <div class="wk-head">
+
+                <a class="wk-arrow" href="{{ url_for('admin', date=duty_status.prev_week) }}#status" title="Previous week" aria-label="Previous week">&lsaquo;</a>
+
+                <div class="wk-title">{{ duty_status.month_label }}</div>
+
+                <a class="wk-arrow" href="{{ url_for('admin', date=duty_status.next_week) }}#status" title="Next week" aria-label="Next week">&rsaquo;</a>
+
+            </div>
+
+            <div class="wk-days">
+                {% for d in duty_status.week_days %}
+                <a class="wk-day{% if d.selected %} sel{% endif %}{% if d.today %} today{% endif %}"
+                   href="{{ url_for('admin', date=d.date) }}#status">
+                    <span class="wk-name">{{ d.name }}</span>
+                    <span class="wk-num">{{ d.num }}</span>
+                    <span class="wk-dots">{% if d.count %}<i></i>{{ d.count }}{% else %}&nbsp;{% endif %}</span>
+                </a>
+                {% endfor %}
+            </div>
+
+            <form method="GET" action="{{ url_for('admin') }}#status" class="wk-foot">
+
+                <label class="wk-pick">
+                    Go to date
+                    <input type="date" name="date" value="{{ duty_status.date }}" onchange="this.form.submit()">
+                </label>
+
+                {% if not duty_status.is_today %}
+                <a class="navbtn today" href="{{ url_for('admin', date=duty_status.today_date) }}#status">Back to Today</a>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+        <p class="date-title">
+            <strong>{{ duty_status.heading }}</strong>
+            &nbsp;&middot;&nbsp; {{ duty_status.long_date }}
+        </p>
+
+        <div class="st-summary">
+            <div class="st-chip">{% if duty_status.is_today %}On Duty Now{% else %}On Duty{% endif %}<b>{{ duty_status.counts.on_duty }}</b></div>
+            <div class="st-chip">Completed<b>{{ duty_status.counts.completed }}</b></div>
+            <div class="st-chip">Absent<b>{{ duty_status.counts.absent }}</b></div>
+            <div class="st-chip">Not Started<b>{{ duty_status.counts.pending }}</b></div>
+        </div>
+
+        {% if duty_status.entries %}
+
+        <div class="duty-list" id="pg-status" data-paginate data-items=".duty-card" data-options="6,12,24,50" data-default="12">
+
+            {% for e in duty_status.entries %}
+            <div class="duty-card s-{{ e.state }}">
+
+                <div class="dc-head">
+                    <div class="dc-avatar">{{ e.username[:1]|upper }}</div>
+
+                    <div class="dc-who">
+                        <strong>{{ e.username }}</strong>
+                        <span class="dc-sched">{{ e.start_time|time12 }} &rarr; {{ e.off_duty_time|time12 }}</span>
+                    </div>
+
+                    <span class="st-badge st-{{ e.state }}">{{ e.label }}</span>
+                </div>
+
+                <div class="dc-stats">
+
+                    <div>
+                        <label>In</label>
+                        <b>{{ e.duty_start|time12 }}</b>
+                        {% if e.late_minutes and e.state in ('on_duty', 'completed') %}
+                            <small class="late">late {{ e.late_minutes|late_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label>Out</label>
+                        <b>{{ e.duty_end|time12 }}</b>
+                    </div>
+
+                    <div>
+                        <label>Worked</label>
+                        <b>{% if e.state == 'completed' %}{{ format_duration(e.worked_seconds) }}{% else %}&mdash;{% endif %}</b>
+                    </div>
+
+                    <div>
+                        <label>Earnings</label>
+                        <b>{% if e.state in ('completed', 'absent') %}&#8369;{{ "%.2f"|format(e.earnings) }}{% else %}&mdash;{% endif %}</b>
+                    </div>
+
+                </div>
+
+                {% if e.can_absent %}
+                <div class="dc-actions">
+                    <form method="POST" action="{{ url_for('admin_mark_absent') }}"
+                          data-confirm="Mark {{ e.username }} as ABSENT? Earnings for this duty will be 0 and they will not be able to duty again.">
+                        <input type="hidden" name="date" value="{{ duty_status.date }}">
+                        {% if e.log_id %}
+                            <input type="hidden" name="log_id" value="{{ e.log_id }}">
+                        {% else %}
+                            <input type="hidden" name="schedule_id" value="{{ e.schedule_id }}">
+                        {% endif %}
+                        <button type="submit" class="danger">Mark Absent</button>
+                    </form>
+                </div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+            <div class="none">No one is scheduled on this day.</div>
+        {% endif %}
+
+        {% if duty_status.day_off_users %}
+        <div class="off-box">
+
+            <div class="off-head">
+                <strong>Not on duty</strong>
+                <span class="count off">{{ duty_status.day_off_users|length }}</span>
+                <small>Day off / no schedule on this date</small>
+            </div>
+
+            <div class="off-list">
+                {% for name in duty_status.day_off_users %}
+                <div class="off-chip"><span class="off-av">{{ name[:1]|upper }}</span>{{ name }}</div>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+
+    </div>
+
+    <div class="tab-panel" id="tab-users">
+
+    <div class="card">
+
+        <div class="users-head">
+
+            <h2>Employees &amp; Duty Schedules</h2>
+
+            <div class="search-wrap">
+                <input type="search" id="user-search" placeholder="Search employee..." autocomplete="off">
+                <select id="filter-role">
+                    <option value="">All roles</option>
+                    {% for r in roles %}
+                    <option value="{{ r['name']|lower }}">{{ r['name']|role_label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="none" id="user-count">{{ users|length }} employees</span>
+                <button type="button" id="open-user">+ Add Employee</button>
+            </div>
+
+        </div>
+
+        <div id="pg-users" data-paginate data-items=".user-card" data-options="5,10,25,50" data-default="5">
+
+        {% for user in users %}
+
+        {% set is_admin = user['role'] == 'admin' %}
+        {% set is_self = user['id'] == current_user_id %}
+
+        <div class="user-card"
+             data-name="{{ user['username']|lower }}"
+             data-role="{{ user['role']|lower }}">
+
+            <div class="user-top">
+
+                <div class="user-title">
+                    <strong class="u-name">{{ user["username"] }}</strong>
+                    <span class="pill role-pill">{{ user['role']|role_label }}</span>
+                    {% if is_self %}<span class="pill you">You</span>{% endif %}
+                </div>
+
+                <div class="inline-form acct-actions">
+
+                    <button type="button" class="gray" data-toggle-edit>Edit</button>
+
+                    {% if not is_self %}
+
+                    <form class="ajax-form delete-form" data-kind="delete" method="POST"
+                          action="{{ url_for('delete_user', user_id=user['id']) }}"
+                          data-confirm="Remove {name}? All of their logs and schedules will be deleted.">
+                        <button type="submit" class="danger">Remove</button>
+                    </form>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="card-msg msg"></div>
+
+            <div class="edit-panel" hidden>
+
+                <form class="ajax-form edit-form" data-kind="account" method="POST"
+                      action="{{ url_for('update_account', user_id=user['id']) }}">
+
+                    <div class="field">
+                        <label>Username</label>
+                        <input type="text" name="username" value="{{ user['username'] }}" maxlength="50" required>
+                    </div>
+
+                    <div class="field">
+                        <label>New password</label>
+                        <input type="password" name="password" placeholder="Leave blank to keep" autocomplete="new-password">
+                    </div>
+
+                    <button type="submit">Save</button>
+
+                    <span class="msg"></span>
+
+                </form>
+
+                {% if not is_self %}
+
+                <form class="ajax-form edit-form" data-kind="role" method="POST"
+                      action="{{ url_for('change_role', user_id=user['id']) }}">
+
+                    <div class="field">
+                        <label>Role</label>
+                        <select name="role">
+                            {% for r in roles %}
+                            <option value="{{ r['name'] }}" {% if r['name']|lower == user['role']|lower %}selected{% endif %}>{{ r['name']|role_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit">Change Role</button>
+
+                    <span class="msg"></span>
+
+                </form>
+
+                {% endif %}
+
+            </div>
+
+            <div class="emp-only">
+
+                <form class="inline-form ajax-form pay-row" data-kind="pay" method="POST"
+                      action="{{ url_for('update_user_settings', user_id=user['id']) }}">
+
+                    <label>Pay rate &#8369;/minute</label>
+
+                    <input type="number" name="pay_rate" min="0" step="0.0001" value="{{ user['pay_rate']|rate }}">
+
+                    <button type="submit">Save</button>
+
+                    <span class="msg"></span>
+
+                </form>
+
+                <div class="inline-form">
+
+                    <label>Schedule</label>
+
+                    <button type="button" class="open-cal" data-user="{{ user['id'] }}"
+                            data-name="{{ user['username'] }}">Calendar</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+            <div class="none">No employees yet.</div>
+
+        {% endfor %}
+
+        </div>
+
+        <div class="none" id="user-empty" style="display:none;">No employees found.</div>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-roles">
+
+    <div class="card">
+
+        <h2>Roles</h2>
+
+        <p class="none" style="margin-top:0;">
+            Create roles like Cashier or Manager and assign them to employees.
+            The default pay rate (pesos per minute) is filled in when you add a new
+            employee with that role. Changing it later does not change existing employees.
+        </p>
+
+        <form method="POST" action="{{ url_for('create_role') }}" class="inline-form" autocomplete="off" style="margin-bottom:18px;">
+
+            <div class="field">
+                <label for="role-name">Role name</label>
+                <input type="text" id="role-name" name="name" maxlength="30" placeholder="e.g. Cashier" required>
+            </div>
+
+            <div class="field">
+                <label for="role-pay">Default pay &#8369;/minute</label>
+                <input type="number" id="role-pay" name="pay_rate" min="0" step="0.0001"
+                       inputmode="decimal" value="0">
+            </div>
+
+            <button type="submit">+ Create Role</button>
+
+        </form>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Accounts</th>
+                        <th>Default pay &#8369;/minute</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in roles %}
+
+                    {% set builtin = r['name']|lower in ['admin', 'employee'] %}
+
+                    <tr>
+
+                        <td>
+                            <strong>{{ r['name']|role_label }}</strong>
+                            {% if builtin %}<span class="pill">Built-in</span>{% endif %}
+                        </td>
+
+                        <td>{{ r['user_count'] }}</td>
+
+                        <td>
+                            {% if r['name']|lower == 'admin' %}
+                                &mdash;
+                            {% else %}
+                            <form method="POST" action="{{ url_for('update_role', role_id=r['id']) }}" class="inline-form" style="margin:0;">
+                                <input type="number" name="pay_rate" min="0" step="0.0001" value="{{ r['pay_rate']|rate }}" style="width:120px;">
+                                <button type="submit" class="gray">Save</button>
+                            </form>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if not builtin %}
+                            <form method="POST" action="{{ url_for('delete_role', role_id=r['id']) }}" style="margin:0;"
+                                  class="role-delete-form" data-role-name="{{ r['name'] }}">
+                                <button type="submit" class="danger">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-earnings">
+
+    <!-- ================================================= -->
+    <!-- EARNINGS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>Total Earnings</h2>
+
+        <form method="GET" action="{{ url_for('admin') }}#earnings" class="range-form" id="range-form">
+
+            <div class="range-field">
+                <label for="from">From</label>
+                <input type="date" id="from" name="from" value="{{ from_date }}" required>
+            </div>
+
+            <div class="range-field">
+                <label for="to">To</label>
+                <input type="date" id="to" name="to" value="{{ to_date }}" required>
+            </div>
+
+            <button type="submit">Compute</button>
+
+            <button type="button" class="gray" data-preset="today">Today</button>
+            <button type="button" class="gray" data-preset="week">Last 7 days</button>
+            <button type="button" class="gray" data-preset="month">This month</button>
+
+        </form>
+
+        <div class="earn-summary">
+
+            <div class="earn-box">
+                <div class="earn-label">{{ from_date }} → {{ to_date }}</div>
+                <div class="earn-big">₱{{ "{:,.2f}".format(grand_total) }}</div>
+                <div class="earn-label">Total earnings of all employees</div>
+            </div>
+
+            <div class="earn-box">
+                <div class="earn-label">Total worked</div>
+                <div class="earn-big">{{ format_duration(grand_worked) }}</div>
+            </div>
+
+        </div>
+
+        <div class="table-wrap" id="pg-earnings" data-paginate data-items="tbody tr">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Pay Rate</th>
+                        <th>Days Worked</th>
+                        <th>Absent</th>
+                        <th>Late</th>
+                        <th>Worked</th>
+                        <th>Earnings</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in earnings_rows %}
+                        <tr>
+                            <td>
+                                <strong>{{ r["username"] }}</strong>
+                            </td>
+                            <td>₱{{ (r["pay_rate"] or 0)|rate }}/min</td>
+                            <td>{{ r["days_worked"] }}</td>
+                            <td>{{ r["days_absent"] }}</td>
+                            <td>{{ r["total_late"]|late_text }}</td>
+                            <td>{{ format_duration(r["total_worked"]) }}</td>
+                            <td><strong>₱{{ "{:,.2f}".format(r["total_earnings"]) }}</strong></td>
+                        </tr>
+                    {% else %}
+                        <tr data-nopage>
+                            <td colspan="7">No employees yet.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+                {% if earnings_rows %}
+                <tfoot>
+                    <tr>
+                        <td colspan="6"><strong>TOTAL (all employees)</strong></td>
+                        <td><strong>₱{{ "{:,.2f}".format(grand_total) }}</strong></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+
+            </table>
+
+        </div>
+
+        <p class="note">
+            Includes all duty logs dated between From and To (both days included).
+            An employee who is still on duty will be counted after they clock out.
+        </p>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-payslips">
+
+    <!-- ================================================= -->
+    <!-- PAYSLIPS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            Employee Payslips
+            {% if ps_cutoff.in_progress %}
+                <span class="ps-state open">IN PROGRESS</span>
+            {% else %}
+                <span class="ps-state closed">CLOSED</span>
+            {% endif %}
+        </h2>
+
+        <form method="GET" action="{{ url_for('admin') }}#payslips" class="range-form" id="ps-form">
+
+            <div class="range-field">
+                <label for="ps-start">From</label>
+                <input type="date" id="ps-start" name="ps_start" value="{{ ps_cutoff.start_iso }}" required>
+            </div>
+
+            <div class="range-field">
+                <label for="ps-end">To</label>
+                <input type="date" id="ps-end" name="ps_end" value="{{ ps_cutoff.end_iso }}" required>
+            </div>
+
+            <button type="submit">Apply</button>
+
+            <div class="range-field ps-preset">
+                <label for="ps-preset">Quick pick</label>
+                <select id="ps-preset">
+                    <option value="">1st–15th / 16th–end…</option>
+                    {% for p in ps_presets %}
+                        <option value="{{ p.start_iso }},{{ p.end_iso }}"{% if p.start_iso == ps_cutoff.start_iso and p.end_iso == ps_cutoff.end_iso %} selected{% endif %}>{{ p.label }}{% if p.in_progress %} (current){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <a class="ps-print" href="{{ url_for('admin_payslips_print', start=ps_cutoff.start_iso, end=ps_cutoff.end_iso) }}" target="_blank">Print all payslips</a>
+
+        </form>
+
+        <div class="earn-summary">
+
+            <div class="earn-box">
+                <div class="earn-label">Gross</div>
+                <div class="earn-big" style="color:#eee;">₱{{ "{:,.2f}".format(ps_gross) }}</div>
+                <div class="earn-label">{{ ps_cutoff.label }}</div>
+            </div>
+
+            <div class="earn-box">
+                <div class="earn-label">Late deductions</div>
+                <div class="earn-big" style="color:#eee;">₱{{ "{:,.2f}".format(ps_late) }}</div>
+            </div>
+
+            <div class="earn-box">
+                <div class="earn-label">Total Net Pay</div>
+                <div class="earn-big">₱{{ "{:,.2f}".format(ps_net) }}</div>
+            </div>
+
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Days</th>
+                        <th>Absent</th>
+                        <th>Worked</th>
+                        <th>Late</th>
+                        <th>Gross</th>
+                        <th>Late ded.</th>
+                        <th>Net Pay</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for s in ps_slips %}
+                        {% set t = s.totals %}
+                        <tr>
+                            <td>
+                                <strong>{{ s.user["username"] }}</strong>
+                                {% if not s.user["enabled"] %}<span class="ps-off">DISABLED</span>{% endif %}
+                                <div class="ps-sub">{{ s.user["role"]|role_label }} • ₱{{ s.user["pay_rate"]|rate }}/min</div>
+                            </td>
+                            <td>{{ t.days_worked }}</td>
+                            <td>{{ t.days_absent }}</td>
+                            <td>{{ format_duration(t.worked_seconds) }}</td>
+                            <td>{{ t.late_minutes|late_text }}</td>
+                            <td>₱{{ "{:,.2f}".format(t.gross) }}</td>
+                            <td>₱{{ "{:,.2f}".format(t.late_deduction) }}</td>
+                            <td><strong>₱{{ "{:,.2f}".format(t.net) }}</strong></td>
+                            <td class="ps-actions">
+                                <a href="{{ url_for('admin_payslip', user_id=s.user['id'], start=ps_cutoff.start_iso, end=ps_cutoff.end_iso) }}">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr data-nopage>
+                            <td colspan="9">No employees yet.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+                {% if ps_slips %}
+                <tfoot>
+                    <tr>
+                        <td colspan="5"><strong>TOTAL</strong></td>
+                        <td><strong>₱{{ "{:,.2f}".format(ps_gross) }}</strong></td>
+                        <td><strong>₱{{ "{:,.2f}".format(ps_late) }}</strong></td>
+                        <td><strong>₱{{ "{:,.2f}".format(ps_net) }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+
+            </table>
+
+        </div>
+
+        <p class="note">
+            Pick any From – To dates as the cut-off (example: Oct 10 to Oct 25).
+            Payslips are computed from the Duty Logs; a duty still ON DUTY is counted after clock-out.
+        </p>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-debts">
+
+    <!-- ================================================= -->
+    <!-- EMPLOYEE DEBTS -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <div class="debt-head">
+            <h2>Employee Debts</h2>
+            <button type="button" id="open-debt">+ Add Debt</button>
+        </div>
+
+        <div class="st-summary">
+            <div class="st-chip">Outstanding<b>₱{{ "{:,.2f}".format(debt_summary.outstanding) }}</b></div>
+            <div class="st-chip">Unpaid Debts<b>{{ debt_summary.unpaid_count }}</b></div>
+            <div class="st-chip">Overdue<b>₱{{ "{:,.2f}".format(debt_summary.overdue_amount) }} <small>({{ debt_summary.overdue_count }})</small></b></div>
+            <div class="st-chip">Paid<b>₱{{ "{:,.2f}".format(debt_summary.paid_total) }}</b></div>
+        </div>
+
+        <div class="st-wrap" id="pg-debts" data-paginate data-items="tbody tr">
+
+            <table class="debt-table">
+
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Amount</th>
+                        <th>Reason</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for d in debts %}
+                        <tr>
+                            <td><strong>{{ d.username }}</strong></td>
+                            <td><strong>₱{{ "{:,.2f}".format(d.amount) }}</strong></td>
+                            <td>
+                                {{ d.reason }}
+                                {% if d.notes %}<small class="sub" title="{{ d.notes }}">{{ d.notes }}</small>{% endif %}
+                            </td>
+                            <td>{{ d.due_date }}</td>
+                            <td>
+                                {% if d.status == "PAID" %}
+                                    <span class="st-badge st-completed">PAID</span>
+                                    {% if d.paid_at %}<small class="sub">{{ d.paid_at }}</small>{% endif %}
+                                {% elif d.overdue %}
+                                    <span class="st-badge st-absent">OVERDUE</span>
+                                {% else %}
+                                    <span class="st-badge st-waiting">UNPAID</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="debt-actions">
+                                    {% if d.status == "UNPAID" %}
+                                        <form method="POST" action="{{ url_for('mark_debt_paid', debt_id=d.id) }}"
+                                              data-confirm="Mark this ₱{{ '{:,.2f}'.format(d.amount) }} debt of {{ d.username }} as PAID?">
+                                            <button type="submit" class="sm">Mark Paid</button>
+                                        </form>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('delete_debt', debt_id=d.id) }}"
+                                          data-confirm="Delete this debt record of {{ d.username }}? This cannot be undone.">
+                                        <button type="submit" class="sm danger">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr data-nopage>
+                            <td colspan="6">No debts recorded.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-adminlog">
+
+    <div class="card">
+
+        <h2>Admin Activity</h2>
+
+        <p class="none" style="margin-top:0;">
+            Everything admins did in this panel: sign-ins, employee and role changes,
+            schedules, absences and debts. Newest first.
+        </p>
+
+        <div class="table-wrap" id="pg-adminlog" data-paginate data-items="tbody tr">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>When</th>
+                        <th>Admin</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for l in admin_logs %}
+                        <tr>
+                            <td>{{ l["created_at"] }}</td>
+                            <td><strong>{{ l["admin_username"] }}</strong></td>
+                            <td><span class="pill">{{ l["category"] }}</span></td>
+                            <td>{{ l["details"] }}</td>
+                            <td>{{ l["ip"] or "—" }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5">No admin activity yet.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-dutylogs">
+
+    <div class="card">
+
+        <h2>Duty Logs</h2>
+
+        <p class="none" style="margin-top:0;">
+            Every duty record with the photo taken when the employee started duty.
+            Tap a photo to enlarge it. Newest first.
+        </p>
+
+        <div class="table-wrap" id="pg-dutylogs" data-paginate data-items="tbody tr" data-default="25">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Schedule</th>
+                        <th>Start</th>
+                        <th>Out</th>
+                        <th>Late</th>
+                        <th>Worked</th>
+                        <th>Earnings</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for log in logs %}
+                        <tr>
+                            <td>
+                                {% if log["start_photo"] %}
+                                    <button type="button" class="dl-photo"
+                                            data-src="{{ url_for('duty_photo', log_id=log['id'], v=log['start_photo']) }}"
+                                            data-cap="{{ log['username'] }} · {{ log['duty_start'] or log['duty_date'] }}"
+                                            aria-label="View start photo of {{ log['username'] }}">
+                                        <img src="{{ url_for('duty_photo', log_id=log['id'], v=log['start_photo']) }}"
+                                             alt="" loading="lazy">
+                                    </button>
+                                {% else %}
+                                    <span class="dl-none">—</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ log["username"] }}</strong></td>
+                            <td>{{ log["duty_date"] }}</td>
+                            <td>
+                                {% if log["status"] == "ABSENT" %}
+                                    <span class="st-badge st-absent">ABSENT</span>
+                                {% elif log["status"] == "COMPLETED" %}
+                                    <span class="st-badge st-completed">COMPLETED</span>
+                                {% else %}
+                                    <span class="st-badge st-on_duty">ON DUTY</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log["scheduled_start"] }} → {{ log["scheduled_end"] }}</td>
+                            <td>{{ log["duty_start"] or "—" }}</td>
+                            <td>{{ log["duty_end"] or "—" }}</td>
+                            <td>{{ log["late_minutes"]|late_text }}</td>
+                            <td>{{ format_duration(log["worked_seconds"]) }}</td>
+                            <td>₱{{ "%.2f"|format(log["earnings"]) }}</td>
+                        </tr>
+                    {% else %}
+                        <tr data-nopage>
+                            <td colspan="10">No duty logs yet.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+    <div class="tab-panel" id="tab-activity">
+
+    <!-- ================================================= -->
+    <!-- RECENT ACTIVITY -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            Recent Activity
+        </h2>
+
+        <div class="table-wrap" id="pg-activity" data-paginate data-items="tbody tr">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Employee
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Schedule
+                        </th>
+
+                        <th>
+                            Start
+                        </th>
+
+                        <th>
+                            Out
+                        </th>
+
+                        <th>
+                            Late
+                        </th>
+
+                        <th>
+                            Earnings
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for log in logs %}
+
+                        <tr>
+
+                            <td>
+                                {{ log["username"] }}
+                            </td>
+
+                            <td>
+                                {{ log["duty_date"] }}
+                            </td>
+
+                            <td>
+                                {{ log["status"] }}
+                            </td>
+
+                            <td>
+                                {{ log["scheduled_start"] }}
+                                →
+                                {{ log["scheduled_end"] }}
+                            </td>
+
+                            <td>
+                                {{ log["duty_start"] or "—" }}
+                            </td>
+
+                            <td>
+                                {{ log["duty_end"] or "—" }}
+                            </td>
+
+                            <td>
+                                {{ log["late_minutes"]|late_text }}
+                            </td>
+
+                            <td>
+                                ₱{{ "%.2f"|format(log["earnings"]) }}
+                            </td>
+
+                        </tr>
+
+                    {% else %}
+
+                        <tr data-nopage>
+
+                            <td colspan="9">
+                                No activity yet.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Recent Debts</h2>
+
+        <div class="st-wrap" id="pg-activity-debts" data-paginate data-items="tbody tr">
+
+            <table class="debt-table">
+
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Date Added</th>
+                        <th>Amount</th>
+                        <th>Reason</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for d in recent_debts %}
+                        <tr>
+                            <td>{{ d.username }}</td>
+                            <td>{{ d.created_at[:10] }}</td>
+                            <td>₱{{ "{:,.2f}".format(d.amount) }}</td>
+                            <td>
+                                {{ d.reason }}
+                                {% if d.notes %}<small class="sub" title="{{ d.notes }}">{{ d.notes }}</small>{% endif %}
+                            </td>
+                            <td>{{ d.due_date }}</td>
+                            <td>
+                                {% if d.status == "PAID" %}
+                                    <span class="st-badge st-completed">PAID</span>
+                                {% elif d.overdue %}
+                                    <span class="st-badge st-absent">OVERDUE</span>
+                                {% else %}
+                                    <span class="st-badge st-waiting">UNPAID</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr data-nopage>
+                            <td colspan="6">No debts yet.</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- SCHEDULE CALENDAR (modal) -->
+<!-- ================================================= -->
+
+<script type="application/json" id="schedule-data">{{ schedule_dates|tojson }}</script>
+
+<div class="modal-backdrop" id="cal-modal" hidden data-today="{{ today_str }}"
+     data-url="{{ url_for('set_calendar_schedule', user_id=0) }}">
+
+    <div class="modal cal-modal" role="dialog" aria-modal="true" aria-labelledby="cal-title">
+
+        <div class="cal-head">
+
+            <h3 id="cal-title">Schedule</h3>
+
+            <div class="cal-nav">
+                <button type="button" class="gray" id="cal-prev">&lsaquo;</button>
+                <strong id="cal-month"></strong>
+                <button type="button" class="gray" id="cal-next">&rsaquo;</button>
+            </div>
+
+        </div>
+
+        <div class="cal-week">
+            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+
+        <div class="cal-grid" id="cal-grid"></div>
+
+        <div class="cal-legend">
+            <i style="background:#51349a;"></i>Duty
+            <i style="background:#1a1a23;border:1px solid #30303b;"></i>Day off (not selected)
+            &middot; Right-click (or press and hold on a phone) a day to change its time. Swipe left or right to change month.
+        </div>
+
+        <div class="cal-tools">
+
+            <span>Time for new days:</span>
+            <input type="time" id="cal-def-start" value="17:00">
+            <span>&rarr;</span>
+            <input type="time" id="cal-def-end" value="19:00">
+            <button type="button" class="gray" id="cal-apply">Apply to all selected</button>
+
+            <span class="sp"></span>
+
+            <button type="button" class="gray" id="cal-weekdays">Mon&ndash;Fri</button>
+            <button type="button" class="gray" id="cal-all">All days</button>
+            <button type="button" class="gray" id="cal-clear">Clear</button>
+
+        </div>
+
+        <div class="modal-actions">
+            <span class="msg err" id="cal-msg" style="margin-right:auto;align-self:center;"></span>
+            <button type="button" class="gray" id="cal-cancel">Cancel</button>
+            <button type="button" id="cal-save">Save Schedule</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- EDIT DAY (modal, right-click / long-press on a calendar day) -->
+<!-- ================================================= -->
+
+<div class="modal-backdrop" id="day-modal" style="z-index:150;" hidden>
+
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="day-title" style="max-width:380px;">
+
+        <h3 id="day-title">Duty Time</h3>
+
+        <p id="day-date" style="margin:-8px 0 18px;color:#aaa;font-size:14px;"></p>
+
+        <div class="field">
+            <label>Start</label>
+            <input type="time" id="day-start">
+        </div>
+
+        <div class="field">
+            <label>End</label>
+            <input type="time" id="day-end">
+        </div>
+
+        <div class="msg err" id="day-msg"></div>
+
+        <div class="modal-actions">
+            <button type="button" class="danger" id="day-remove" style="margin-right:auto;">Day Off</button>
+            <button type="button" class="gray" id="day-cancel">Cancel</button>
+            <button type="button" id="day-save">Save</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- ADD EMPLOYEE (modal) -->
+<!-- ================================================= -->
+
+<div class="modal-backdrop" id="user-modal" hidden>
+
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="user-title">
+
+        <h3 id="user-title">Add Employee</h3>
+
+        <form method="POST" action="{{ url_for('create_user') }}" id="user-form" autocomplete="off">
+
+            <div class="field">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" name="username" minlength="3" maxlength="50"
+                       pattern="[A-Za-z0-9_.\-]{3,50}" title="Letters, numbers, dot, dash or underscore"
+                       placeholder="Username" required>
+            </div>
+
+            <div class="field">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" name="password" minlength="6" maxlength="128"
+                       autocomplete="new-password" placeholder="At least 6 characters" required>
+            </div>
+
+            <div class="field">
+                <label for="new-role">Role</label>
+                <select id="new-role" name="role"
+                        style="width:100%;padding:11px;background:#1a1a23;color:#fff;border:1px solid #30303b;border-radius:8px;">
+                    {% for r in roles if r['name']|lower != 'admin' %}
+                    <option value="{{ r['name'] }}" data-rate="{{ r['pay_rate']|rate }}">{{ r['name']|role_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="new-pay">Pay rate per minute</label>
+                <div class="money">
+                    <span>&#8369;</span>
+                    <input type="number" id="new-pay" name="pay_rate" min="0" step="0.0001"
+                           inputmode="decimal" value="" placeholder="Role default">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="gray" id="user-cancel">Cancel</button>
+                <button type="submit" id="user-submit">Add Employee</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- ADD EMPLOYEE DEBT (modal) -->
+<!-- ================================================= -->
+
+<div class="modal-backdrop" id="debt-modal" hidden>
+
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="debt-title">
+
+        <h3 id="debt-title">Add Employee Debt</h3>
+
+        <form method="POST" action="{{ url_for('add_debt') }}" id="debt-form">
+
+            <div class="field">
+                <label for="debt-user">Employee</label>
+                <select id="debt-user" name="user_id" required>
+                    <option value="">Select Employee</option>
+                    {% for u in debt_users %}
+                        <option value="{{ u.id }}">{{ u.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="debt-amount">Amount</label>
+                <div class="money">
+                    <span>₱</span>
+                    <input type="number" id="debt-amount" name="amount" min="0.01" max="10000000" step="0.01"
+                           inputmode="decimal" placeholder="1,000.00" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="debt-reason">Reason</label>
+                <input type="text" id="debt-reason" name="reason" maxlength="200"
+                       placeholder="Emergency loan" required>
+            </div>
+
+            <div class="field">
+                <label for="debt-due">Due Date</label>
+                <input type="date" id="debt-due" name="due_date" required>
+            </div>
+
+            <div class="field">
+                <label for="debt-notes">Notes</label>
+                <textarea id="debt-notes" name="notes" maxlength="1000" placeholder="Optional"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="gray" id="debt-cancel">Cancel</button>
+                <button type="submit" id="debt-submit">Add Debt</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- BOTTOM NAVIGATION (phones) -->
+<!-- ================================================= -->
+
+<nav class="bottom-nav" aria-label="Admin sections">
+    <button type="button" class="bn-btn" data-tab="status"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Status</span></button>
+    <button type="button" class="bn-btn" data-tab="users"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2.1.7 3.5 2.6 3.5 5.7"/></svg><span>Staff</span></button>
+    <button type="button" class="bn-btn" data-tab="roles"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>Roles</span></button>
+    <button type="button" class="bn-btn" data-tab="earnings"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span>Earnings</span></button>
+    <button type="button" class="bn-btn" data-tab="payslips"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Payslips</span></button>
+    <button type="button" class="bn-btn" data-tab="debts"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>Debts</span></button>
+    <button type="button" class="bn-btn" data-tab="activity"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>Activity</span></button>
+    <button type="button" class="bn-btn" data-tab="dutylogs"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.2"/><path d="M8 5l1.2-2h5.6L16 5"/></svg><span>Logs</span></button>
+    <button type="button" class="bn-btn" data-tab="adminlog"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>Admin Log</span></button>
+</nav>
+
+<script>
+
+(function () {
+
+    const KEY = "adminTab";
+    const buttons = document.querySelectorAll(".tab-btn, .bn-btn[data-tab]");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    function show(name) {
+
+        if (!document.getElementById("tab-" + name)) {
+            name = "status";
+        }
+
+        buttons.forEach(function (b) {
+            b.classList.toggle("active", b.dataset.tab === name);
+        });
+
+        panels.forEach(function (p) {
+            p.classList.toggle("active", p.id === "tab-" + name);
+        });
+
+        try {
+            localStorage.setItem(KEY, name);
+        } catch (e) {}
+
+        if (location.hash !== "#" + name) {
+            history.replaceState(null, "", "#" + name);
+        }
+    }
+
+    buttons.forEach(function (b) {
+        b.addEventListener("click", function () {
+            show(b.dataset.tab);
+            window.scrollTo(0, 0);
+        });
+    });
+
+    let initial = location.hash.slice(1);
+
+    // coming back from the date-range form
+    if (!initial && new URLSearchParams(location.search).has("from")) {
+        initial = "earnings";
+    }
+
+    if (!initial && new URLSearchParams(location.search).has("ps_start")) {
+        initial = "payslips";
+    }
+
+    if (!initial) {
+        try {
+            initial = localStorage.getItem(KEY) || "status";
+        } catch (e) {
+            initial = "status";
+        }
+    }
+
+    show(initial);
+
+})();
+
+    // Earnings quick presets
+    const TODAY = "{{ today_str }}";
+
+    function ymd(d) {
+        return d.getUTCFullYear() + "-" +
+            String(d.getUTCMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getUTCDate()).padStart(2, "0");
+    }
+
+    document.querySelectorAll("[data-preset]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+
+            const t = new Date(TODAY + "T00:00:00Z");
+            let from = new Date(t);
+
+            if (btn.dataset.preset === "week") {
+                from.setUTCDate(from.getUTCDate() - 6);
+            } else if (btn.dataset.preset === "month") {
+                from.setUTCDate(1);
+            }
+
+            document.getElementById("from").value = ymd(from);
+            document.getElementById("to").value = ymd(t);
+            document.getElementById("range-form").submit();
+        });
+    });
+
+// Payslips quick pick: fill From / To and apply
+(function () {
+
+    const sel = document.getElementById("ps-preset");
+
+    if (!sel) return;
+
+    // Keep the Quick pick on the applied cut-off
+    (function () {
+        const key = document.getElementById("ps-start").value + "," +
+                    document.getElementById("ps-end").value;
+        for (let i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value === key) { sel.selectedIndex = i; break; }
+        }
+    })();
+
+    sel.addEventListener("change", function () {
+
+        if (!sel.value) return;
+
+        const parts = sel.value.split(",");
+
+        document.getElementById("ps-start").value = parts[0];
+        document.getElementById("ps-end").value = parts[1];
+        document.getElementById("ps-form").submit();
+    });
+
+})();
+
+// Confirm before dangerous actions (Mark Absent)
+document.querySelectorAll("form[data-confirm]").forEach(function (f) {
+    f.addEventListener("submit", function (ev) {
+
+        const card = f.closest(".user-card");
+        const name = card ? card.querySelector(".u-name").textContent : "";
+
+        if (!confirm(f.dataset.confirm.replace("{name}", name))) {
+            ev.preventDefault();
+        }
+    });
+});
+
+// Search + role/status filters (work together with pagination)
+function applyFilters(resetPage) {
+
+    const box = document.getElementById("user-search");
+    const roleSel = document.getElementById("filter-role");
+    const list = document.getElementById("pg-users");
+    const count = document.getElementById("user-count");
+    const empty = document.getElementById("user-empty");
+
+    if (!box || !list) return;
+
+    const q = box.value.trim().toLowerCase();
+    const cards = Array.prototype.slice.call(list.querySelectorAll(".user-card"));
+
+    let shown = 0;
+
+    cards.forEach(function (card) {
+
+        const match =
+            (!q || card.dataset.name.indexOf(q) !== -1) &&
+            (!roleSel.value || card.dataset.role === roleSel.value);
+
+        card.toggleAttribute("data-filtered", !match);
+
+        if (match) shown++;
+    });
+
+    count.textContent = (q || roleSel.value)
+        ? shown + " of " + cards.length + " employees"
+        : cards.length + " employees";
+
+    empty.style.display = (cards.length && !shown) ? "block" : "none";
+
+    if (list._pager) list._pager.refresh(!!resetPage);
+}
+
+["user-search", "filter-role"].forEach(function (id) {
+
+    const el = document.getElementById(id);
+
+    if (!el) return;
+
+    el.addEventListener(id === "user-search" ? "input" : "change", function () {
+        applyFilters(true);
+    });
+});
+
+// Edit panel toggle
+document.querySelectorAll("[data-toggle-edit]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+
+        const panel = btn.closest(".user-card").querySelector(".edit-panel");
+
+        panel.hidden = !panel.hidden;
+        btn.textContent = panel.hidden ? "Edit" : "Close";
+    });
+});
+
+function toast(text) {
+
+    let t = document.getElementById("toast");
+
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "toast";
+        document.body.appendChild(t);
+    }
+
+    t.textContent = text;
+    t.hidden = false;
+
+    clearTimeout(toast._timer);
+
+    toast._timer = setTimeout(function () { t.hidden = true; }, 4000);
+}
+
+// Save pay rate and other card forms in the background (no page reload)
+// What changes on screen after each successful action
+const afterSave = {
+
+    account: function (form, card, d) {
+
+        if (d.username) {
+            card.dataset.name = d.username.toLowerCase();
+            card.querySelector(".u-name").textContent = d.username;
+            form.querySelector('input[name="username"]').value = d.username;
+        }
+
+        form.querySelector('input[name="password"]').value = "";
+
+        applyFilters(false);
+    },
+
+    role: function (form, card, d) {
+
+        card.dataset.role = d.role.toLowerCase();
+        card.querySelector(".role-pill").textContent = d.role_label || d.role;
+
+        applyFilters(false);
+    },
+
+    "delete": function (form, card, d) {
+
+        card.remove();
+
+        toast(d.message);
+
+        applyFilters(false);
+    }
+};
+
+document.querySelectorAll("form.ajax-form").forEach(function (form) {
+
+    const card = form.closest(".user-card");
+    const kind = form.dataset.kind;
+    const button = form.querySelector('button[type="submit"]');
+    const msg = form.querySelector(".msg") || (card && card.querySelector(".card-msg"));
+
+    function say(text, kind) {
+
+        if (!msg) return;
+
+        msg.className = (msg.classList.contains("card-msg") ? "card-msg " : "") + "msg " + kind;
+        msg.textContent = text;
+    }
+
+    function dirty() {
+        say("Unsaved changes", "dirty");
+    }
+
+    if (form.querySelector(".msg")) {
+        form.addEventListener("input", dirty);
+        form.addEventListener("change", dirty);
+    }
+
+    form.addEventListener("submit", function (ev) {
+
+        // a data-confirm handler (registered earlier) may have cancelled it
+        const cancelled = ev.defaultPrevented;
+
+        ev.preventDefault();
+
+        if (cancelled) return;
+
+        if (button) button.disabled = true;
+
+        say("Saving...", "dirty");
+
+        fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: { "X-Requested-With": "fetch" },
+            credentials: "same-origin"
+        })
+            .then(function (r) {
+                return r.json().then(function (d) {
+                    return { ok: r.ok && d.ok, d: d };
+                });
+            })
+            .then(function (res) {
+
+                say(res.d.message, res.ok ? "ok" : "err");
+
+                if (res.ok && afterSave[kind]) {
+                    afterSave[kind](form, card, res.d, msg);
+                }
+
+                if (!res.ok && kind === "delete") toast(res.d.message);
+            })
+            .catch(function () {
+                say("Could not save. Refresh the page (you may have been logged out) and try again.", "err");
+            })
+            .then(function () {
+                if (button) button.disabled = false;
+            });
+    });
+});
+
+// Pagination (rows per page + page buttons) for every tab
+document.querySelectorAll("[data-paginate]").forEach(function (box) {
+
+    const selector = box.dataset.items;
+    const options = (box.dataset.options || "10,25,50,100").split(",").map(Number);
+    const storeKey = "adminRows_" + box.id;
+
+    let size = parseInt(box.dataset.default, 10) || options[0];
+    let page = 1;
+
+    try {
+        const saved = parseInt(localStorage.getItem(storeKey), 10);
+        if (options.indexOf(saved) !== -1) size = saved;
+    } catch (e) {}
+
+    const bar = document.createElement("div");
+    bar.className = "pager";
+    box.insertAdjacentElement("afterend", bar);
+
+    function allItems() {
+        return Array.prototype.filter.call(
+            box.querySelectorAll(selector),
+            function (el) { return !el.hasAttribute("data-nopage"); }
+        );
+    }
+
+    function pageList(current, last) {
+
+        // 1 ... 4 5 6 ... 20
+        const set = {};
+
+        [1, last, current - 1, current, current + 1].forEach(function (n) {
+            if (n >= 1 && n <= last) set[n] = true;
+        });
+
+        const nums = Object.keys(set).map(Number).sort(function (a, b) { return a - b; });
+        const out = [];
+
+        nums.forEach(function (n, i) {
+            if (i && n - nums[i - 1] > 1) out.push("...");
+            out.push(n);
+        });
+
+        return out;
+    }
+
+    function button(label, target, opts) {
+
+        const b = document.createElement("button");
+
+        b.type = "button";
+        b.textContent = label;
+
+        if (opts && opts.active) b.className = "active";
+        if (opts && opts.disabled) b.disabled = true;
+
+        b.addEventListener("click", function () {
+            page = target;
+            render();
+        });
+
+        return b;
+    }
+
+    function render() {
+
+        const items = allItems();
+        const visible = items.filter(function (el) {
+            return !el.hasAttribute("data-filtered");
+        });
+
+        const total = visible.length;
+        const pages = Math.max(1, Math.ceil(total / size));
+
+        page = Math.min(Math.max(1, page), pages);
+
+        const from = (page - 1) * size;
+        const to = from + size;
+
+        let i = 0;
+
+        items.forEach(function (el) {
+
+            if (el.hasAttribute("data-filtered")) {
+                el.style.display = "none";
+                return;
+            }
+
+            el.style.display = (i >= from && i < to) ? "" : "none";
+            i++;
+        });
+
+        // ----- controls
+        bar.innerHTML = "";
+
+        if (!items.length) return;
+
+        const left = document.createElement("div");
+
+        const label = document.createElement("label");
+        label.textContent = "Rows per page";
+
+        const select = document.createElement("select");
+
+        options.forEach(function (n) {
+
+            const o = document.createElement("option");
+
+            o.value = n;
+            o.textContent = n;
+            o.selected = n === size;
+
+            select.appendChild(o);
+        });
+
+        select.addEventListener("change", function () {
+
+            size = parseInt(select.value, 10);
+            page = 1;
+
+            try { localStorage.setItem(storeKey, size); } catch (e) {}
+
+            render();
+        });
+
+        label.appendChild(select);
+        left.appendChild(label);
+
+        const info = document.createElement("span");
+
+        info.style.marginLeft = "16px";
+        info.textContent = total
+            ? "Showing " + (from + 1) + "-" + Math.min(to, total) + " of " + total
+            : "No results";
+
+        left.appendChild(info);
+
+        const right = document.createElement("div");
+        right.className = "pager-pages";
+
+        right.appendChild(button("‹ Prev", page - 1, { disabled: page === 1 }));
+
+        pageList(page, pages).forEach(function (n) {
+
+            if (n === "...") {
+
+                const s = document.createElement("span");
+
+                s.className = "dots";
+                s.textContent = "...";
+
+                right.appendChild(s);
+
+            } else {
+                right.appendChild(button(n, n, { active: n === page }));
+            }
+        });
+
+        right.appendChild(button("Next ›", page + 1, { disabled: page === pages }));
+
+        bar.appendChild(left);
+        bar.appendChild(right);
+    }
+
+    box._pager = {
+        refresh: function (reset) {
+            if (reset) page = 1;
+            render();
+        }
+    };
+
+    render();
+});
+
+// Custom dark time picker (replaces the browser's white one)
+(function () {
+
+    const valueProp = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    const CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+    let pop = null;
+    let popOwner = null;
+
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+    function parse(v) {
+
+        const m = /^(\d{1,2}):(\d{2})/.exec(v || "");
+
+        if (!m) return null;
+
+        const h24 = parseInt(m[1], 10);
+
+        return { h: h24 % 12 || 12, m: parseInt(m[2], 10), pm: h24 >= 12 };
+    }
+
+    function format(t) {
+        return t ? t.h + ":" + pad(t.m) + " " + (t.pm ? "PM" : "AM") : "--:-- --";
+    }
+
+    function closePop() {
+
+        if (pop) pop.remove();
+
+        if (popOwner) popOwner.btn.classList.remove("open");
+
+        pop = null;
+        popOwner = null;
+    }
+
+    function openPop(o) {
+
+        closePop();
+
+        popOwner = o;
+        o.btn.classList.add("open");
+
+        let t = parse(valueProp.get.call(o.input)) || { h: 5, m: 0, pm: true };
+
+        pop = document.createElement("div");
+        pop.className = "tp-pop";
+
+        const cols = document.createElement("div");
+        cols.className = "tp-cols";
+
+        function commit() {
+
+            const h24 = (t.h % 12) + (t.pm ? 12 : 0);
+
+            valueProp.set.call(o.input, pad(h24) + ":" + pad(t.m));
+
+            o.label.textContent = format(t);
+
+            o.input.dispatchEvent(new Event("input", { bubbles: true }));
+            o.input.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+
+        function column(items, isSel, onPick) {
+
+            const col = document.createElement("div");
+            col.className = "tp-col";
+
+            items.forEach(function (it) {
+
+                const b = document.createElement("button");
+                b.type = "button";
+                b.textContent = it.label;
+
+                if (isSel(it.value)) b.className = "sel";
+
+                b.addEventListener("click", function () {
+                    onPick(it.value);
+                    col.querySelectorAll("button").forEach(function (x) { x.className = ""; });
+                    b.className = "sel";
+                    commit();
+                });
+
+                col.appendChild(b);
+            });
+
+            cols.appendChild(col);
+
+            return col;
+        }
+
+        const hours = [];
+        for (let i = 1; i <= 12; i++) hours.push({ label: pad(i), value: i });
+
+        const mins = [];
+        for (let i = 0; i < 60; i++) mins.push({ label: pad(i), value: i });
+
+        column(hours, function (v) { return v === t.h; }, function (v) { t.h = v; });
+        column(mins, function (v) { return v === t.m; }, function (v) { t.m = v; });
+        column(
+            [{ label: "AM", value: false }, { label: "PM", value: true }],
+            function (v) { return v === t.pm; },
+            function (v) { t.pm = v; }
+        );
+
+        pop.appendChild(cols);
+
+        const foot = document.createElement("div");
+        foot.className = "tp-foot";
+
+        const clear = document.createElement("button");
+        clear.type = "button";
+        clear.className = "gray";
+        clear.textContent = "Clear";
+        clear.addEventListener("click", function () {
+            valueProp.set.call(o.input, "");
+            o.label.textContent = format(null);
+            o.input.dispatchEvent(new Event("change", { bubbles: true }));
+            closePop();
+        });
+
+        const ok = document.createElement("button");
+        ok.type = "button";
+        ok.textContent = "OK";
+        ok.addEventListener("click", closePop);
+
+        foot.appendChild(clear);
+        foot.appendChild(ok);
+        pop.appendChild(foot);
+
+        document.body.appendChild(pop);
+
+        // place under the field; flip above when there is no room
+        const r = o.btn.getBoundingClientRect();
+        const h = pop.offsetHeight;
+
+        let top = r.bottom + 6;
+        if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+
+        let left = Math.min(r.left, window.innerWidth - pop.offsetWidth - 8);
+
+        pop.style.top = top + "px";
+        pop.style.left = Math.max(8, left) + "px";
+
+        // scroll the selected hour / minute into view
+        pop.querySelectorAll(".tp-col").forEach(function (col) {
+            const sel = col.querySelector(".sel");
+            if (sel) col.scrollTop = sel.offsetTop - col.clientHeight / 2 + sel.offsetHeight / 2;
+        });
+    }
+
+    document.addEventListener("mousedown", function (ev) {
+        if (pop && !pop.contains(ev.target) && !(popOwner && popOwner.btn.contains(ev.target))) {
+            closePop();
+        }
+    });
+
+    // Esc closes only the picker, not the modal behind it
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && pop) {
+            ev.stopImmediatePropagation();
+            closePop();
+        }
+    }, true);
+
+    window.addEventListener("resize", closePop);
+
+    document.querySelectorAll('input[type="time"]').forEach(function (input) {
+
+        const wrap = document.createElement("span");
+        wrap.className = "tp";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tp-btn";
+
+        const label = document.createElement("span");
+
+        btn.appendChild(label);
+        btn.insertAdjacentHTML("beforeend", CLOCK);
+
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(btn);
+        wrap.appendChild(input);
+        input.style.display = "none";
+
+        const o = { input: input, btn: btn, label: label };
+
+        label.textContent = format(parse(valueProp.get.call(input)));
+
+        // keep the label in sync when code sets input.value
+        Object.defineProperty(input, "value", {
+            configurable: true,
+            get: function () { return valueProp.get.call(input); },
+            set: function (v) {
+                valueProp.set.call(input, v);
+                label.textContent = format(parse(valueProp.get.call(input)));
+            }
+        });
+
+        btn.addEventListener("click", function () {
+            if (popOwner === o) closePop(); else openPop(o);
+        });
+    });
+
+})();
+
+// Schedule calendar modal
+(function () {
+
+    const modal = document.getElementById("cal-modal");
+
+    if (!modal) return;
+
+    const data = JSON.parse(document.getElementById("schedule-data").textContent || "{}");
+    const todayStr = modal.dataset.today;
+    const grid = document.getElementById("cal-grid");
+    const msg = document.getElementById("cal-msg");
+    const saveBtn = document.getElementById("cal-save");
+    const dayModal = document.getElementById("day-modal");
+    const dayStart = document.getElementById("day-start");
+    const dayEnd = document.getElementById("day-end");
+    const dayMsg = document.getElementById("day-msg");
+    const defStart = document.getElementById("cal-def-start");
+    const defEnd = document.getElementById("cal-def-end");
+
+    const MONTHS = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+
+    let userId = null;
+    let state = {};
+    let editing = null;
+    let suppressClick = false;
+    let year = 0;
+    let month = 0;
+
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+    function key(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+
+    function say(text) { msg.textContent = text || ""; }
+
+    function daysIn(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+    function render() {
+
+        document.getElementById("cal-month").textContent = MONTHS[month] + " " + year;
+
+        grid.innerHTML = "";
+
+        // Monday-first offset
+        const offset = (new Date(year, month, 1).getDay() + 6) % 7;
+
+        for (let i = 0; i < offset; i++) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "cal-day blank";
+            grid.appendChild(b);
+        }
+
+        for (let d = 1; d <= daysIn(year, month); d++) {
+
+            const k = key(year, month, d);
+            const b = document.createElement("button");
+            const on = state[k];
+
+            b.type = "button";
+            b.className = "cal-day"
+                + (on ? " on" : "")
+                + (k < todayStr ? " past" : "")
+                + (k === todayStr ? " today" : "")
+                ;
+
+            const n = document.createElement("span");
+            n.className = "n";
+            n.textContent = d;
+            b.appendChild(n);
+
+            if (on) {
+
+                const t = document.createElement("span");
+                t.className = "t";
+                t.textContent = on[0] + "-" + on[1];
+
+                b.appendChild(t);
+            }
+
+            // left click / tap = select or unselect only
+            b.addEventListener("click", function () {
+
+                if (suppressClick) {
+                    suppressClick = false;
+                    return;
+                }
+
+                if (k < todayStr) return;
+
+                say("");
+
+                if (state[k]) {
+                    delete state[k];
+                } else {
+                    state[k] = [defStart.value || "17:00", defEnd.value || "19:00"];
+                }
+
+                render();
+            });
+
+            // right click = edit this day's time
+            b.addEventListener("contextmenu", function (ev) {
+                ev.preventDefault();
+                editDay(k);
+            });
+
+            // hold (touch) = edit this day's time
+            let timer = null;
+            let sx = 0;
+            let sy = 0;
+
+            b.addEventListener("touchstart", function (ev) {
+
+                if (ev.touches.length !== 1) return;
+
+                sx = ev.touches[0].clientX;
+                sy = ev.touches[0].clientY;
+
+                clearTimeout(timer);
+
+                timer = setTimeout(function () {
+                    timer = null;
+                    suppressClick = true;
+                    editDay(k);
+                }, 500);
+
+            }, { passive: true });
+
+            b.addEventListener("touchmove", function (ev) {
+
+                const t = ev.touches[0];
+
+                if (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10) {
+                    clearTimeout(timer);
+                }
+
+            }, { passive: true });
+
+            ["touchend", "touchcancel"].forEach(function (name) {
+                b.addEventListener(name, function () { clearTimeout(timer); });
+            });
+
+            grid.appendChild(b);
+        }
+    }
+
+    function editDay(k) {
+
+        if (k < todayStr) return;
+
+        editing = k;
+
+        const p = k.split("-");
+        const dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+
+        document.getElementById("day-date").textContent =
+            dt.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+        const cur = state[k] || [defStart.value || "17:00", defEnd.value || "19:00"];
+
+        dayStart.value = cur[0];
+        dayEnd.value = cur[1];
+
+        dayMsg.textContent = "";
+        document.getElementById("day-remove").style.display = state[k] ? "" : "none";
+
+        dayModal.hidden = false;
+    }
+
+    function closeDay() {
+        dayModal.hidden = true;
+        editing = null;
+    }
+
+    document.getElementById("day-cancel").addEventListener("click", closeDay);
+
+    document.getElementById("day-remove").addEventListener("click", function () {
+        if (editing) delete state[editing];
+        closeDay();
+        render();
+    });
+
+    document.getElementById("day-save").addEventListener("click", function () {
+
+        if (!dayStart.value || !dayEnd.value) {
+            dayMsg.textContent = "Set both start and end time.";
+            return;
+        }
+
+        if (dayStart.value === dayEnd.value) {
+            dayMsg.textContent = "Start and end time cannot be the same.";
+            return;
+        }
+
+        state[editing] = [dayStart.value, dayEnd.value];
+        closeDay();
+        render();
+    });
+
+    dayModal.addEventListener("mousedown", function (ev) {
+        if (ev.target === dayModal) closeDay();
+    });
+
+    // Esc closes only this window, not the calendar behind it
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && !dayModal.hidden) {
+            ev.stopImmediatePropagation();
+            closeDay();
+        }
+    }, true);
+
+    function eachFutureDayOfMonth(fn) {
+
+        for (let d = 1; d <= daysIn(year, month); d++) {
+
+            const k = key(year, month, d);
+
+            if (k >= todayStr) fn(k, new Date(year, month, d).getDay());
+        }
+    }
+
+    document.getElementById("cal-weekdays").addEventListener("click", function () {
+        eachFutureDayOfMonth(function (k, wd) {
+            if (wd >= 1 && wd <= 5 && !state[k]) state[k] = [defStart.value, defEnd.value];
+        });
+        render();
+    });
+
+    document.getElementById("cal-all").addEventListener("click", function () {
+        eachFutureDayOfMonth(function (k) {
+            if (!state[k]) state[k] = [defStart.value, defEnd.value];
+        });
+        render();
+    });
+
+    document.getElementById("cal-clear").addEventListener("click", function () {
+        eachFutureDayOfMonth(function (k) { delete state[k]; });
+        render();
+    });
+
+    document.getElementById("cal-apply").addEventListener("click", function () {
+        Object.keys(state).forEach(function (k) {
+            if (k >= todayStr) state[k] = [defStart.value, defEnd.value];
+        });
+        render();
+    });
+
+    function shift(by) {
+        month += by;
+        if (month < 0) { month = 11; year--; }
+        if (month > 11) { month = 0; year++; }
+        render();
+    }
+
+
+    // swipe left = next month, swipe right = previous month
+    (function () {
+
+        let x0 = 0;
+        let y0 = 0;
+        let tracking = false;
+
+        grid.addEventListener("touchstart", function (ev) {
+
+            if (ev.touches.length !== 1) { tracking = false; return; }
+
+            x0 = ev.touches[0].clientX;
+            y0 = ev.touches[0].clientY;
+            tracking = true;
+
+        }, { passive: true });
+
+        grid.addEventListener("touchend", function (ev) {
+
+            if (!tracking) return;
+
+            tracking = false;
+
+            const t = ev.changedTouches[0];
+            const dx = t.clientX - x0;
+            const dy = t.clientY - y0;
+
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+
+                // the swipe must not also select the day it ended on
+                suppressClick = true;
+                setTimeout(function () { suppressClick = false; }, 350);
+
+                shift(dx < 0 ? 1 : -1);
+            }
+
+        }, { passive: true });
+
+    })();
+
+    document.getElementById("cal-prev").addEventListener("click", function () { shift(-1); });
+    document.getElementById("cal-next").addEventListener("click", function () { shift(1); });
+
+    function open(id, name) {
+
+        userId = id;
+        state = JSON.parse(JSON.stringify(data[id] || {}));
+        editing = null;
+        dayModal.hidden = true;
+
+        const first = Object.keys(state).sort().find(function (k) { return k >= todayStr; });
+
+        if (first) {
+            defStart.value = state[first][0];
+            defEnd.value = state[first][1];
+        }
+
+        const t = todayStr.split("-");
+        year = parseInt(t[0], 10);
+        month = parseInt(t[1], 10) - 1;
+
+        document.getElementById("cal-title").textContent = "Schedule \u2014 " + name;
+
+        say("");
+        saveBtn.disabled = false;
+        render();
+
+        modal.hidden = false;
+    }
+
+    function close() { modal.hidden = true; }
+
+    document.querySelectorAll(".open-cal").forEach(function (b) {
+        b.addEventListener("click", function () { open(b.dataset.user, b.dataset.name); });
+    });
+
+    document.getElementById("cal-cancel").addEventListener("click", close);
+
+    modal.addEventListener("mousedown", function (ev) {
+        if (ev.target === modal) close();
+    });
+
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && !modal.hidden) close();
+    });
+
+    saveBtn.addEventListener("click", function () {
+
+        const out = {};
+
+        for (const k of Object.keys(state)) {
+
+            if (k < todayStr) continue;
+
+            if (!state[k][0] || !state[k][1]) {
+                say(k + ": set both times.");
+                return;
+            }
+
+            if (state[k][0] === state[k][1]) {
+                say(k + ": start and off-duty time cannot be the same.");
+                return;
+            }
+
+            out[k] = state[k];
+        }
+
+        const fd = new FormData();
+        fd.append("days", JSON.stringify(out));
+
+        saveBtn.disabled = true;
+        say("Saving...");
+
+        fetch(modal.dataset.url.replace("/0/", "/" + userId + "/"), {
+            method: "POST",
+            body: fd,
+            headers: { "X-Requested-With": "fetch" },
+            credentials: "same-origin"
+        })
+            .then(function (r) {
+                return r.json().then(function (d) { return { ok: r.ok && d.ok, d: d }; });
+            })
+            .then(function (res) {
+
+                if (!res.ok) {
+                    say(res.d.message);
+                    return;
+                }
+
+                // keep past dates, replace the rest with what was saved
+                const keep = {};
+
+                Object.keys(data[userId] || {}).forEach(function (k) {
+                    if (k < todayStr) keep[k] = data[userId][k];
+                });
+
+                data[userId] = Object.assign(keep, out);
+
+                close();
+                toast(res.d.message);
+            })
+            .catch(function () {
+                say("Could not save. Refresh the page (you may have been logged out) and try again.");
+            })
+            .then(function () { saveBtn.disabled = false; });
+    });
+
+})();
+
+// Add Employee modal
+(function () {
+
+    const modal = document.getElementById("user-modal");
+    const form = document.getElementById("user-form");
+    const submit = document.getElementById("user-submit");
+
+    if (!modal || !form) return;
+
+    function open() {
+        form.reset();
+        submit.disabled = false;
+        modal.hidden = false;
+        document.getElementById("new-username").focus();
+    }
+
+    function close() {
+        modal.hidden = true;
+    }
+
+    document.getElementById("open-user").addEventListener("click", open);
+    document.getElementById("user-cancel").addEventListener("click", close);
+
+    modal.addEventListener("mousedown", function (ev) {
+        if (ev.target === modal) close();
+    });
+
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && !modal.hidden) close();
+    });
+
+    form.addEventListener("submit", function () {
+        submit.disabled = true;
+    });
+
+})();
+
+
+
+// Phones: give every table cell its column name so rows can show as cards
+(function () {
+
+    document.querySelectorAll(".table-wrap table, .st-wrap table").forEach(function (tbl) {
+
+        const heads = Array.prototype.map.call(
+            tbl.querySelectorAll("thead th"),
+            function (th) { return th.textContent.trim(); }
+        );
+
+        if (!heads.length) return;
+
+        tbl.classList.add("stack");
+
+        tbl.querySelectorAll("tr").forEach(function (tr) {
+
+            if (tr.parentElement.tagName === "THEAD") return;
+
+            const cells = Array.prototype.slice.call(tr.children);
+
+            if (cells.length !== heads.length) {
+                tr.classList.add("wide");
+                return;
+            }
+
+            cells.forEach(function (td, i) {
+
+                if (heads[i]) td.setAttribute("data-label", heads[i]);
+                else td.classList.add("nolabel");
+            });
+        });
+    });
+
+})();
+
+// Confirm before deleting a role
+document.querySelectorAll(".role-delete-form").forEach(function (f) {
+    f.addEventListener("submit", function (ev) {
+        const msg = "Delete role " + f.dataset.roleName +
+            "? Accounts with this role become Employee.";
+        if (!confirm(msg)) ev.preventDefault();
+    });
+});
+
+// Add Employee modal: show the chosen role's default pay rate
+(function () {
+
+    const sel = document.getElementById("new-role");
+    const pay = document.getElementById("new-pay");
+
+    if (!sel || !pay) return;
+
+    function sync() {
+        const opt = sel.options[sel.selectedIndex];
+        pay.placeholder = opt ? "Role default: " + opt.dataset.rate : "";
+    }
+
+    sel.addEventListener("change", sync);
+    document.getElementById("open-user").addEventListener("click", sync);
+
+    sync();
+
+})();
+
+// Add Employee Debt modal
+(function () {
+
+    const modal = document.getElementById("debt-modal");
+    const form = document.getElementById("debt-form");
+    const submit = document.getElementById("debt-submit");
+
+    if (!modal || !form) return;
+
+    function open() {
+        form.reset();
+        submit.disabled = false;
+        modal.hidden = false;
+        document.getElementById("debt-user").focus();
+    }
+
+    function close() {
+        modal.hidden = true;
+    }
+
+    document.getElementById("open-debt").addEventListener("click", open);
+    document.getElementById("debt-cancel").addEventListener("click", close);
+
+    // click on the dark area (not the box) closes it
+    modal.addEventListener("mousedown", function (ev) {
+        if (ev.target === modal) close();
+    });
+
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && !modal.hidden) close();
+    });
+
+    // no double submit
+    form.addEventListener("submit", function () {
+        submit.disabled = true;
+    });
+
+})();
+
+</script>
+
+
+<!-- ===== Photo viewer for Duty Logs ===== -->
+<div class="dl-lightbox" id="dl-lightbox" role="dialog" aria-modal="true" aria-label="Start photo">
+    <img id="dl-lightbox-img" alt="Start photo">
+    <div class="cap" id="dl-lightbox-cap"></div>
+</div>
+
+<script>
+(function () {
+    const box = document.getElementById("dl-lightbox");
+    const img = document.getElementById("dl-lightbox-img");
+    const cap = document.getElementById("dl-lightbox-cap");
+
+    document.addEventListener("click", function (e) {
+        const b = e.target.closest && e.target.closest(".dl-photo");
+        if (!b) return;
+        img.src = b.dataset.src;
+        cap.textContent = b.dataset.cap || "";
+        box.classList.add("open");
+    });
+
+    function close() {
+        box.classList.remove("open");
+        img.removeAttribute("src");
+    }
+
+    box.addEventListener("click", close);
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && box.classList.contains("open")) close();
+    });
+})();
+</script>
+
+</body>
+
+</html>

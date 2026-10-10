@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Activity</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b0b0f;
+            color: #eee;
+            font-family: Arial, sans-serif;
+        }
+
+        .nav {
+            height: 64px;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #101016;
+            border-bottom: 1px solid #292934;
+        }
+
+        .brand {
+            font-weight: bold;
+        }
+
+        .nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-left: 18px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #13131b;
+            border: 1px solid #292934;
+            border-radius: 13px;
+            padding: 20px;
+        }
+
+        .label {
+            color: #888894;
+            font-size: 13px;
+        }
+
+        .number {
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th {
+            text-align: left;
+            color: #858591;
+            font-size: 12px;
+            padding: 13px;
+            border-bottom: 1px solid #292934;
+        }
+
+        td {
+            padding: 14px 13px;
+            border-bottom: 1px solid #20202a;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .absent {
+            background: #6d2929;
+            color: #ff8c8c;
+        }
+
+        .completed {
+            background: #174e35;
+            color: #68e6a1;
+        }
+
+        .on-duty {
+            background: #51349a;
+            color: #d6c4ff;
+        }
+
+        .unpaid {
+            background: #5a4a1a;
+            color: #ffc45c;
+        }
+
+        .debts {
+            margin-top: 20px;
+        }
+
+        .debts h2 {
+            margin: 0 0 14px;
+            font-size: 18px;
+        }
+
+        .debts table {
+            min-width: 650px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 40px;
+        }
+
+        @media(max-width: 900px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width: 700px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<div class="nav">
+
+    <div class="brand">
+        Activity
+    </div>
+
+    <div>
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        {% if admin_view %}
+
+            <a href="{{ url_for('admin') }}">
+                Admin
+            </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('settings') }}">
+            Settings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+    <h1>
+        {{ user["username"] }} Activity
+    </h1>
+
+
+    <div class="summary">
+
+        <div class="card">
+
+            <div class="label">
+                Pay Rate
+            </div>
+
+            <div class="number">
+                ₱{{ user["pay_rate"]|rate }}/min
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="label">
+                Total Earnings
+            </div>
+
+            <div class="number">
+                ₱{{ "%.2f"|format(total_earnings) }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="label">
+                Records
+            </div>
+
+            <div class="number">
+                {{ logs|length }}
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="label">
+                Debt Balance
+            </div>
+
+            <div class="number">
+                ₱{{ "{:,.2f}".format(debt_outstanding) }}
+            </div>
+
+            {% if debt_overdue_count %}
+                <div class="label" style="color:#ff8c8c;margin-top:4px;">
+                    {{ debt_overdue_count }} overdue
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="table-wrap">
+
+            {% if logs %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            {% if admin_view %}
+
+                                <th>
+                                    Employee
+                                </th>
+
+                            {% endif %}
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Scheduled
+                            </th>
+
+                            <th>
+                                Actual Start
+                            </th>
+
+                            <th>
+                                Actual Out
+                            </th>
+
+                            <th>
+                                Late
+                            </th>
+
+                            <th>
+                                Worked
+                            </th>
+
+                            <th>
+                                Earnings
+                            </th>
+
+                            {% if admin_view %}
+
+                                <th>
+                                    Start Photo
+                                </th>
+
+                            {% endif %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for log in logs %}
+
+                            <tr>
+
+                                <td>
+                                    {{ log["duty_date"] }}
+                                </td>
+
+
+                                {% if admin_view %}
+
+                                    <td>
+                                        {{ log["username"] }}
+                                    </td>
+
+                                {% endif %}
+
+
+                                <td>
+
+                                    {% if log["status"] == "ABSENT" %}
+
+                                        <span class="badge absent">
+                                            ABSENT
+                                        </span>
+
+                                    {% elif log["status"] == "COMPLETED" %}
+
+                                        <span class="badge completed">
+                                            COMPLETED
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge on-duty">
+                                            ON DUTY
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ log["scheduled_start"] }}
+
+                                    →
+
+                                    {{ log["scheduled_end"] }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if log["duty_start"] %}
+                                        {{ log["duty_start"] }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if log["duty_end"] %}
+                                        {{ log["duty_end"] }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ log["late_minutes"] }} min
+                                </td>
+
+
+                                <td>
+                                    {{ format_duration(log["worked_seconds"]) }}
+                                </td>
+
+
+                                <td>
+                                    ₱{{ "%.2f"|format(log["earnings"]) }}
+                                </td>
+
+
+                                {% if admin_view %}
+
+                                    <td>
+
+                                        {% if log["start_photo"] %}
+
+                                            <a href="{{ url_for('duty_photo', log_id=log['id'], v=log['start_photo']) }}"
+                                               target="_blank">
+                                                <img src="{{ url_for('duty_photo', log_id=log['id'], v=log['start_photo']) }}"
+                                                     alt="Start photo"
+                                                     loading="lazy"
+                                                     style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #292934;">
+                                            </a>
+
+                                        {% else %}
+                                            —
+                                        {% endif %}
+
+                                    </td>
+
+                                {% endif %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="empty">
+                    No activity yet.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="card debts">
+
+        <h2>Debts</h2>
+
+        <div class="table-wrap">
+
+            {% if debts %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Date Added</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            {% if admin_view %}
+                                <th>Notes</th>
+                            {% endif %}
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for d in debts %}
+
+                            <tr>
+
+                                <td>{{ d["created_at"][:10] }}</td>
+
+                                <td>₱{{ "{:,.2f}".format(d["amount"]) }}</td>
+
+                                <td>{{ d["reason"] }}</td>
+
+                                <td>{{ d["due_date"] }}</td>
+
+                                <td>
+
+                                    {% if d["status"] == "PAID" %}
+
+                                        <span class="badge completed">PAID</span>
+
+                                        {% if d["paid_at"] %}
+                                            <div class="label" style="margin-top:4px;">{{ d["paid_at"][:10] }}</div>
+                                        {% endif %}
+
+                                    {% elif d["overdue"] %}
+
+                                        <span class="badge absent">OVERDUE</span>
+
+                                    {% else %}
+
+                                        <span class="badge unpaid">UNPAID</span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                {% if admin_view %}
+                                    <td>{{ d["notes"] or "—" }}</td>
+                                {% endif %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="empty">
+                    No debts.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
