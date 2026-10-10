@@ -36,11 +36,17 @@ app = Flask(__name__)
 
 app.secret_key = "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY"
 
-DATABASE = "users.db"
-
-# Duty start selfies (private folder, NOT under /static)
+# Vercel's deployed application directory is read-only. Use /tmp there
+# for temporary SQLite/photo writes; use the project folder for local runs.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PHOTO_DIR = os.path.join(BASE_DIR, "duty_photos")
+ON_VERCEL = os.environ.get("VERCEL", "").lower() == "1"
+DATA_DIR = "/tmp" if ON_VERCEL else BASE_DIR
+
+DATABASE = os.path.join(DATA_DIR, "users.db")
+
+# Duty start selfies (private folder, NOT under /static).
+# WARNING: Vercel /tmp storage is temporary and may be cleared between runs.
+PHOTO_DIR = os.path.join(DATA_DIR, "duty_photos")
 MAX_PHOTO_BYTES = 1_500_000
 os.makedirs(PHOTO_DIR, exist_ok=True)
 app.config["MAX_FORM_MEMORY_SIZE"] = 4 * 1024 * 1024
@@ -4483,12 +4489,18 @@ def admin_payslips_print():
 
 
 # =========================================================
+# DATABASE INITIALIZATION
+# =========================================================
+# Initialize tables when the module is imported by a WSGI/serverless host
+# such as Vercel, not only when running this file directly.
+init_db()
+
+
+# =========================================================
 # START SERVER
 # =========================================================
 
 if __name__ == "__main__":
-
-    init_db()
 
     # Localhost only (test mode): open http://127.0.0.1:5000
     # Only this computer can reach it. Use host="0.0.0.0" to allow
